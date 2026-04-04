@@ -8,6 +8,11 @@ class JsonParser(BaseParser):
         file_encoding = encoding or "utf-8"
 
         with open(file_path, encoding=file_encoding) as handle:
-            data = json.load(handle)
+            content = handle.read().strip()
 
+        if content.lstrip().startswith("{") and "\n" in content:
+            records = [json.loads(line) for line in content.splitlines() if line.strip()]
+            return ParseResult(records=records, errors=[], metadata={})
+
+        data = json.loads(content)
         return ParseResult(records=data, errors=[], metadata={})
