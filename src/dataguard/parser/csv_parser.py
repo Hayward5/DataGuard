@@ -8,7 +8,10 @@ class CsvParser(BaseParser):
         file_encoding = encoding or "utf-8"
 
         with open(file_path, encoding=file_encoding, newline="") as handle:
-            reader = csv.DictReader(handle)
+            sample = handle.read(1024)
+            handle.seek(0)
+            dialect = csv.Sniffer().sniff(sample, delimiters=",;")
+            reader = csv.DictReader(handle, dialect=dialect)
             records = list(reader)
 
-        return ParseResult(records=records, metadata={"delimiter": ","})
+        return ParseResult(records=records, metadata={"delimiter": dialect.delimiter})
