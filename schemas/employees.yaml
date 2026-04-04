@@ -1,0 +1,14 @@
+schema:
+  name: employees
+  version: "1.0"
+  strict: true
+  columns:
+    - name: employee_id
+      type: string
+      required: true
+      pattern: "^EMP-[0-9]{3}$"
+    - name: age
+      type: integer
+      required: true
+      min: 18
+      max: 65
