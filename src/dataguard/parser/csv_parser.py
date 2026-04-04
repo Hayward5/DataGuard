@@ -10,7 +10,10 @@ class CsvParser(BaseParser):
         with open(file_path, encoding=file_encoding, newline="") as handle:
             sample = handle.read(1024)
             handle.seek(0)
-            dialect = csv.Sniffer().sniff(sample, delimiters=",;")
+            try:
+                dialect = csv.Sniffer().sniff(sample, delimiters=",;") if sample else csv.excel
+            except csv.Error:
+                dialect = csv.excel
             reader = csv.DictReader(handle, dialect=dialect)
             records = list(reader)
 
