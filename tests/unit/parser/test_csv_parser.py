@@ -28,3 +28,16 @@ def test_csv_parser_detects_semicolon_delimiter(tmp_path):
     ]
     assert result.errors == []
     assert result.metadata["delimiter"] == ";"
+
+
+def test_csv_parser_returns_empty_result_for_empty_file(tmp_path):
+    from dataguard.parser.csv_parser import CsvParser
+
+    csv_path = tmp_path / "employees.csv"
+    csv_path.write_text("", encoding="utf-8")
+
+    result = CsvParser().parse(str(csv_path))
+
+    assert result.records == []
+    assert result.errors == []
+    assert result.metadata["delimiter"] == ","
