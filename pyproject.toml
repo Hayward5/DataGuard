@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dataguard-rebuild"
+version = "0.1.0"
+description = "Schema-driven CLI for structured data validation, conversion, and cleaning"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "click>=8.1",
+  "PyYAML>=6.0",
+  "chardet>=5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+]
+
+[project.scripts]
+dataguard = "dataguard.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q --cov=src/dataguard --cov-report=term-missing"
