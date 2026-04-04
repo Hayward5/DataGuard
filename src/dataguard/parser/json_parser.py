@@ -1,6 +1,6 @@
 import json
 
-from dataguard.parser.base import BaseParser, ParseResult
+from dataguard.parser.base import BaseParser, ParseErrorItem, ParseResult
 
 
 class JsonParser(BaseParser):
@@ -11,8 +11,16 @@ class JsonParser(BaseParser):
             content = handle.read().strip()
 
         if content.lstrip().startswith("{") and "\n" in content:
-            records = [json.loads(line) for line in content.splitlines() if line.strip()]
-            return ParseResult(records=records, errors=[], metadata={})
+            records = []
+            errors = []
+            for index, line in enumerate(content.splitlines(), start=1):
+                if not line.strip():
+                    continue
+                try:
+                    records.append(json.loads(line))
+                except json.JSONDecodeError as exc:
+                    errors.append(ParseErrorItem(row=index, message=str(exc)))
+            return ParseResult(records=records, errors=errors, metadata={})
 
         data = json.loads(content)
         return ParseResult(records=data, errors=[], metadata={})
