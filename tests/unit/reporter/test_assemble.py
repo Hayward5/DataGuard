@@ -1,0 +1,31 @@
+def test_assemble_report_counts_error_results():
+    from dataguard.reporter.assemble import assemble_report
+    from dataguard.schema.results import ValidationResult
+
+    report = assemble_report(
+        source_file="employees.csv",
+        schema_name="employees",
+        total_rows=2,
+        results=[
+            ValidationResult(
+                row=1,
+                column="employee_id",
+                value="EMP-001",
+                level="PASS",
+                code="OK",
+                message="",
+            ),
+            ValidationResult(
+                row=2,
+                column="age",
+                value="abc",
+                level="ERROR",
+                code="INVALID_INTEGER",
+                message="bad integer",
+            ),
+        ],
+    )
+
+    assert report.total_rows == 2
+    assert report.error_count == 1
+    assert report.error_summary["age"]["INVALID_INTEGER"] == 1
