@@ -1,6 +1,6 @@
 import csv
 
-from dataguard.parser.base import BaseParser, ParseResult
+from dataguard.parser.base import BaseParser, ParseErrorItem, ParseResult
 
 
 class CsvParser(BaseParser):
@@ -14,7 +14,20 @@ class CsvParser(BaseParser):
                 dialect = csv.Sniffer().sniff(sample, delimiters=",;") if sample else csv.excel
             except csv.Error:
                 dialect = csv.excel
-            reader = csv.DictReader(handle, dialect=dialect)
-            records = list(reader)
+            reader = csv.reader(handle, dialect=dialect)
+            rows = list(reader)
 
-        return ParseResult(records=records, metadata={"delimiter": dialect.delimiter})
+        if not rows:
+            return ParseResult(records=[], errors=[], metadata={"delimiter": dialect.delimiter})
+
+        header = rows[0]
+        records: list[dict[str, str]] = []
+        errors: list[ParseErrorItem] = []
+
+        for index, row in enumerate(rows[1:], start=2):
+            if len(row) != len(header):
+                errors.append(ParseErrorItem(row=index, message="Mismatched column count"))
+                continue
+            records.append(dict(zip(header, row)))
+
+        return ParseResult(records=records, errors=errors, metadata={"delimiter": dialect.delimiter})
