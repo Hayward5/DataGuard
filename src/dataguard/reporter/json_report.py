@@ -7,9 +7,18 @@ def render_json_report(report, limit: int = 20) -> dict:
             "total_rows": report.total_rows,
             "pass_count": report.pass_count,
             "warning_count": report.warning_count,
+            "parse_error_count": report.parse_error_count,
+            "validation_error_count": report.validation_error_count,
             "error_count": report.error_count,
         },
         "error_summary": report.error_summary,
+        "parse_errors": [
+            {
+                "row": error.row,
+                "message": error.message,
+            }
+            for error in report.parse_errors
+        ],
         "details": [
             {
                 "row": detail.row,

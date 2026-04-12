@@ -3,10 +3,19 @@ from datetime import datetime, timezone
 from dataguard.reporter.models import Report
 
 
-def assemble_report(source_file: str, schema_name: str, total_rows: int, results: list):
+def assemble_report(
+    source_file: str,
+    schema_name: str,
+    total_rows: int,
+    results: list,
+    parse_errors: list | None = None,
+):
+    parse_errors = parse_errors or []
     pass_count = sum(1 for result in results if result.level == "PASS")
     warning_count = sum(1 for result in results if result.level == "WARNING")
-    error_count = sum(1 for result in results if result.level == "ERROR")
+    validation_error_count = sum(1 for result in results if result.level == "ERROR")
+    parse_error_count = len(parse_errors)
+    error_count = validation_error_count + parse_error_count
 
     error_summary: dict[str, dict[str, int]] = {}
     for result in results:
@@ -23,7 +32,10 @@ def assemble_report(source_file: str, schema_name: str, total_rows: int, results
         total_rows=total_rows,
         pass_count=pass_count,
         warning_count=warning_count,
+        parse_error_count=parse_error_count,
+        validation_error_count=validation_error_count,
         error_count=error_count,
         error_summary=error_summary,
+        parse_errors=parse_errors,
         details=results,
     )

@@ -4,8 +4,23 @@ from dataguard.schema.results import ValidationResult
 
 def validate_records(schema, records):
     results: list[ValidationResult] = []
+    column_names = {column.name for column in schema.columns}
 
     for row_index, record in enumerate(records, start=1):
+        if schema.strict:
+            for key, value in record.items():
+                if key not in column_names:
+                    results.append(
+                        ValidationResult(
+                            row=row_index,
+                            column=key,
+                            value=value,
+                            level="ERROR",
+                            code="UNKNOWN_COLUMN",
+                            message="Unknown column",
+                        )
+                    )
+
         for column in schema.columns:
             value = record.get(column.name)
 
