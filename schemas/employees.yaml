@@ -7,6 +7,35 @@ schema:
       type: string
       required: true
       pattern: "^EMP-[0-9]{3}$"
+    - name: name
+      type: string
+      required: true
+      min_length: 3
+      max_length: 5
+    - name: status
+      type: enum
+      required: true
+      values:
+        - ACTIVE
+        - INACTIVE
+        - LEAVE
+    - name: is_active
+      type: boolean
+      required: true
+      true_values:
+        - "true"
+        - "1"
+        - "yes"
+        - "Y"
+      false_values:
+        - "false"
+        - "0"
+        - "no"
+        - "N"
+    - name: join_date
+      type: string
+      required: true
+      format: date
     - name: age
       type: integer
       required: true

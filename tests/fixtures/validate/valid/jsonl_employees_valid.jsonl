@@ -1,0 +1,2 @@
+{"employee_id": "EMP-001", "name": "Alice", "status": "ACTIVE", "is_active": "true", "join_date": "2026-04-12", "age": 30}
+{"employee_id": "EMP-002", "name": "Bob", "status": "INACTIVE", "is_active": "N", "join_date": "2026-04-10", "age": 40}
