@@ -1,0 +1,3 @@
+{"employee_id": "EMP-001", "name": "Alice", "status": "ACTIVE", "is_active": "true", "join_date": "2026-04-12", "age": 30}
+{bad json}
+{"employee_id": "EMP-002", "name": "Robert", "status": "UNKNOWN", "is_active": "maybe", "join_date": "bad-date", "age": "abc"}

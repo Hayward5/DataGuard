@@ -160,3 +160,70 @@ def test_validate_flow_limit_restricts_report_details(tmp_path):
 
     payload = json.loads(report_path.read_text(encoding="utf-8"))
     assert len(payload["details"]) == 3
+
+
+def test_validate_flow_jsonl_reports_parse_errors_and_validation_errors_together(tmp_path):
+    runner = CliRunner()
+
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "validate" / "edge"
+    input_path = fixture_root / "jsonl_employees_edge_mixed.jsonl"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input",
+            str(input_path),
+            "--schema",
+            str(schema_path),
+            "--report",
+            str(report_path),
+            "--format",
+            "json",
+        ],
+    )
+
+    assert result.exit_code == 1, result.output
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["parse_error_count"] == 1
+    assert payload["summary"]["validation_error_count"] == 5
+    assert payload["summary"]["error_count"] == 6
+    assert payload["error_summary"]["name"]["STRING_TOO_LONG"] == 1
+    assert payload["parse_errors"][0]["row"] == 2
+    assert payload["error_summary"]["status"]["INVALID_ENUM"] == 1
+    assert payload["error_summary"]["is_active"]["INVALID_BOOLEAN"] == 1
+    assert payload["error_summary"]["join_date"]["INVALID_DATE_FORMAT"] == 1
+    assert payload["error_summary"]["age"]["INVALID_INTEGER"] == 1
+
+
+def test_validate_flow_strict_schema_reports_unknown_columns(tmp_path):
+    runner = CliRunner()
+
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "validate" / "edge"
+    input_path = fixture_root / "csv_employees_unknown_column.csv"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input",
+            str(input_path),
+            "--schema",
+            str(schema_path),
+            "--report",
+            str(report_path),
+            "--format",
+            "json",
+        ],
+    )
+
+    assert result.exit_code == 1, result.output
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["validation_error_count"] == 1
+    assert payload["error_summary"]["extra_note"]["UNKNOWN_COLUMN"] == 1

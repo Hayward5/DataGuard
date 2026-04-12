@@ -1,0 +1,2 @@
+employee_id,name,status,is_active,join_date,age,extra_note
+EMP-001,Alice,ACTIVE,true,2026-04-12,30,unexpected
