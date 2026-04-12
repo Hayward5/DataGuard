@@ -72,3 +72,55 @@ def test_validate_records_reports_required_missing_without_secondary_errors():
     results = validate_records(schema, [{"status": ""}, {}])
 
     assert [result.code for result in results] == ["REQUIRED_MISSING", "REQUIRED_MISSING"]
+
+
+def test_validate_records_reports_unknown_columns_when_schema_is_strict():
+    from dataguard.schema.engine import validate_records
+    from dataguard.schema.models import ColumnSchema, Schema
+
+    schema = Schema(
+        name="employees",
+        version="1.0",
+        strict=True,
+        columns=[
+            ColumnSchema(name="employee_id", type="string", required=True),
+        ],
+    )
+
+    results = validate_records(
+        schema,
+        [
+            {"employee_id": "EMP-001", "extra_note": "unexpected"},
+        ],
+    )
+
+    errors = [result for result in results if result.level == "ERROR"]
+
+    assert len(errors) == 1
+    assert errors[0].column == "extra_note"
+    assert errors[0].code == "UNKNOWN_COLUMN"
+
+
+def test_validate_records_ignores_unknown_columns_when_schema_is_not_strict():
+    from dataguard.schema.engine import validate_records
+    from dataguard.schema.models import ColumnSchema, Schema
+
+    schema = Schema(
+        name="employees",
+        version="1.0",
+        strict=False,
+        columns=[
+            ColumnSchema(name="employee_id", type="string", required=True),
+        ],
+    )
+
+    results = validate_records(
+        schema,
+        [
+            {"employee_id": "EMP-001", "extra_note": "allowed"},
+        ],
+    )
+
+    errors = [result for result in results if result.level == "ERROR"]
+
+    assert errors == []
