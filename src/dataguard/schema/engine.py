@@ -22,6 +22,19 @@ def validate_records(schema, records):
                 )
                 continue
 
+            if value in (None, ""):
+                results.append(
+                    ValidationResult(
+                        row=row_index,
+                        column=column.name,
+                        value=value,
+                        level="PASS",
+                        code="OK",
+                        message="",
+                    )
+                )
+                continue
+
             validator = get_validator(column)
             message = validator.validate(value)
             level = "PASS" if message.code == "OK" else "ERROR"
