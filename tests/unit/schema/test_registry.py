@@ -1,6 +1,7 @@
-def test_registry_returns_string_integer_and_enum_validators():
+def test_registry_returns_string_integer_enum_and_boolean_validators():
     from dataguard.schema.models import ColumnSchema
     from dataguard.schema.registry import get_validator
+    from dataguard.schema.validators.boolean import BooleanValidator
     from dataguard.schema.validators.enum import EnumValidator
     from dataguard.schema.validators.numeric import IntegerValidator
     from dataguard.schema.validators.string import StringValidator
@@ -16,4 +17,15 @@ def test_registry_returns_string_integer_and_enum_validators():
     assert isinstance(
         get_validator(ColumnSchema(name="status", type="enum", values=["ACTIVE"])),
         EnumValidator,
+    )
+    assert isinstance(
+        get_validator(
+            ColumnSchema(
+                name="is_active",
+                type="boolean",
+                true_values=["true"],
+                false_values=["false"],
+            )
+        ),
+        BooleanValidator,
     )
