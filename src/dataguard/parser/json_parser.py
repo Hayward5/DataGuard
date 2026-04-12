@@ -1,5 +1,6 @@
 import json
 
+from dataguard.exceptions import ParseFailure
 from dataguard.parser.base import BaseParser, ParseErrorItem, ParseResult
 
 
@@ -22,5 +23,9 @@ class JsonParser(BaseParser):
                     errors.append(ParseErrorItem(row=index, message=str(exc)))
             return ParseResult(records=records, errors=errors, metadata={})
 
-        data = json.loads(content)
+        try:
+            data = json.loads(content)
+        except json.JSONDecodeError as exc:
+            raise ParseFailure(f"Invalid JSON input: {exc}") from exc
+
         return ParseResult(records=data, errors=[], metadata={})

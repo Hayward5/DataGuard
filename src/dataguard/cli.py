@@ -3,6 +3,7 @@ from pathlib import Path
 
 import click
 
+from dataguard.exceptions import ParseFailure, SchemaFailure
 from dataguard.parser.factory import get_parser
 from dataguard.reporter.assemble import assemble_report
 from dataguard.reporter.json_report import render_json_report
@@ -25,15 +26,32 @@ def validate(input_path, schema_path, report_path, report_format, limit):
     if not report_path:
         raise click.UsageError("--report is required for output")
 
-    parser = get_parser(Path(input_path))
-    parse_result = parser.parse(input_path)
-    schema = load_schema(schema_path)
+    try:
+        parser = get_parser(Path(input_path))
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    try:
+        parse_result = parser.parse(input_path)
+    except FileNotFoundError as exc:
+        raise click.ClickException("Input file not found") from exc
+    except ParseFailure as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    try:
+        schema = load_schema(schema_path)
+    except FileNotFoundError as exc:
+        raise click.ClickException("Schema file not found") from exc
+    except SchemaFailure as exc:
+        raise click.ClickException(str(exc)) from exc
+
     results = validate_records(schema, parse_result.records)
     report = assemble_report(
         source_file=input_path,
         schema_name=schema.name,
         total_rows=len(parse_result.records),
         results=results,
+        parse_errors=parse_result.errors,
     )
 
     payload = render_json_report(report, limit=limit)
