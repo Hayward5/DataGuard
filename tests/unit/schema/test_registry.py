@@ -1,7 +1,8 @@
-def test_registry_returns_string_integer_enum_and_boolean_validators():
+def test_registry_returns_string_integer_enum_boolean_and_date_validators():
     from dataguard.schema.models import ColumnSchema
     from dataguard.schema.registry import get_validator
     from dataguard.schema.validators.boolean import BooleanValidator
+    from dataguard.schema.validators.date import DateValidator
     from dataguard.schema.validators.enum import EnumValidator
     from dataguard.schema.validators.numeric import IntegerValidator
     from dataguard.schema.validators.string import StringValidator
@@ -28,4 +29,8 @@ def test_registry_returns_string_integer_enum_and_boolean_validators():
             )
         ),
         BooleanValidator,
+    )
+    assert isinstance(
+        get_validator(ColumnSchema(name="join_date", type="string", format="date")),
+        DateValidator,
     )
