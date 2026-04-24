@@ -1,0 +1,3 @@
+employee_id,name,status,is_active,join_date,age
+EMP-001,Alice,ACTIVE,true,2026-04-12,20
+EMP-002,Robert,UNKNOWN,maybe,bad-date,abc
