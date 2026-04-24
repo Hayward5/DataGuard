@@ -134,3 +134,14 @@ def test_validate_reports_invalid_json_input(tmp_path):
 
     assert result.exit_code == 1
     assert "Invalid JSON input" in result.output
+
+
+def test_clean_requires_output_and_report_paths():
+    runner = CliRunner()
+
+    result = runner.invoke(
+        main,
+        ["clean", "--input", "x.csv", "--schema", "schema.yaml"],
+    )
+
+    assert result.exit_code == 2

@@ -59,3 +59,15 @@ def validate(input_path, schema_path, report_path, report_format, limit):
 
     if report.error_count > 0:
         raise SystemExit(1)
+
+
+@main.command()
+@click.option("--input", "input_path", required=True)
+@click.option("--schema", "schema_path", required=True)
+@click.option("--transforms", "transforms_path", required=True)
+@click.option("--output", "output_path", required=True)
+@click.option("--report", "report_path", required=True)
+@click.option("--format", "report_format", type=click.Choice(["json"]), default="json")
+@click.option("--limit", default=20, type=int)
+def clean(input_path, schema_path, transforms_path, output_path, report_path, report_format, limit):
+    raise NotImplementedError
