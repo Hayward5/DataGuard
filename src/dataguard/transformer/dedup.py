@@ -2,15 +2,25 @@ def dedup(records, transform):
     keys = transform["keys"]
     keep = transform.get("keep", "first")
 
-    if keep != "first":
-        raise ValueError(f"Unsupported dedup keep mode: {keep}")
+    if keep == "first":
+        seen = set()
+        result = []
+        for record in records:
+            key = tuple(record.get(field) for field in keys)
+            if key in seen:
+                continue
+            seen.add(key)
+            result.append(dict(record))
+        return result
 
-    seen = set()
-    result = []
-    for record in records:
-        key = tuple(record.get(field) for field in keys)
-        if key in seen:
-            continue
-        seen.add(key)
-        result.append(dict(record))
-    return result
+    if keep == "last":
+        latest = {}
+        order = []
+        for record in records:
+            key = tuple(record.get(field) for field in keys)
+            if key not in latest:
+                order.append(key)
+            latest[key] = dict(record)
+        return [latest[key] for key in order]
+
+    raise ValueError(f"Unsupported dedup keep mode: {keep}")
