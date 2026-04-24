@@ -11,4 +11,7 @@ def fill_missing(records, transform):
                 record[column] = default_value
         return current
 
+    if strategy == "drop_row":
+        return [record for record in current if record.get(column) not in (None, "")]
+
     raise ValueError(f"Unsupported fill_missing strategy: {strategy}")
