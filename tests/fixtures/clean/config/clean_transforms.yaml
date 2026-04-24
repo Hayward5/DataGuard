@@ -1,0 +1,11 @@
+transforms:
+  - operation: dedup
+    keys: [employee_id]
+    keep: first
+  - operation: fill_missing
+    column: is_active
+    strategy: default
+    value: "false"
+  - operation: type_cast
+    column: age
+    target_type: integer
