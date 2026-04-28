@@ -1,0 +1,12 @@
+[
+  {
+    "employee_id": "EMP-001",
+    "age": 30,
+    "status": "ACTIVE"
+  },
+  {
+    "employee_id": "EMP-002",
+    "age": 25,
+    "status": "INACTIVE"
+  }
+]
