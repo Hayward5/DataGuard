@@ -4,6 +4,7 @@ from pathlib import Path
 import click
 
 from dataguard.output import write_csv_output
+from dataguard.output_factory import get_output_writer
 from dataguard.exceptions import ParseFailure, SchemaFailure
 from dataguard.parser.factory import get_parser
 from dataguard.reporter.assemble import assemble_report
@@ -134,4 +135,21 @@ def clean(input_path, schema_path, transforms_path, output_path, report_path, re
 @click.option("--input", "input_path", required=True)
 @click.option("--output", "output_path", required=True)
 def convert(input_path, output_path):
-    raise NotImplementedError
+    try:
+        parser = get_parser(Path(input_path))
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    try:
+        writer = get_output_writer(Path(output_path))
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    try:
+        parse_result = parser.parse(input_path)
+    except FileNotFoundError as exc:
+        raise click.ClickException("Input file not found") from exc
+    except ParseFailure as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    writer(parse_result.records, output_path)
