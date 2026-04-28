@@ -145,3 +145,12 @@ def test_clean_requires_output_and_report_paths():
     )
 
     assert result.exit_code == 2
+
+
+def test_convert_requires_input_and_output_paths():
+    runner = CliRunner()
+
+    result = runner.invoke(main, ["convert", "--input", "in.csv"])
+
+    assert result.exit_code == 2
+    assert "Missing option '--output'" in result.output

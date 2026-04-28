@@ -128,3 +128,10 @@ def clean(input_path, schema_path, transforms_path, output_path, report_path, re
 
     if report.error_count > 0:
         raise SystemExit(1)
+
+
+@main.command()
+@click.option("--input", "input_path", required=True)
+@click.option("--output", "output_path", required=True)
+def convert(input_path, output_path):
+    raise NotImplementedError
