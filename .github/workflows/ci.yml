@@ -1,0 +1,36 @@
+name: CI
+
+# 只要有推送或建立 PR，就自動跑測試。
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 先把目前分支的程式碼抓下來。
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 安裝 Python 3.12，和專案要求一致。
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 安裝 uv，讓 CI 和本機一樣用 uv 管理依賴與執行測試。
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v4
+
+      # 安裝開發依賴，包含 pytest 與 pytest-cov。
+      - name: Install dependencies
+        run: uv sync --extra dev --frozen
+
+      # 執行完整測試。PR 只要讓這一步變紅，就代表不能合併。
+      - name: Run tests
+        run: UV_CACHE_DIR=/tmp/uv-cache uv run pytest -q
