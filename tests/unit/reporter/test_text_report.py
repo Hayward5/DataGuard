@@ -69,3 +69,30 @@ def test_text_report_is_string():
     report = _make_report()
     output = render_text_report(report)
     assert isinstance(output, str)
+
+
+def test_text_report_includes_error_summary_when_errors_exist():
+    report = _make_report(
+        results=[
+            ValidationResult(row=1, column="age", value="abc", level="ERROR", code="INVALID_INTEGER", message="bad integer"),
+            ValidationResult(row=2, column="age", value="17", level="ERROR", code="OUT_OF_RANGE", message="out of range"),
+            ValidationResult(row=3, column="status", value="UNKNOWN", level="ERROR", code="INVALID_ENUM", message="bad enum"),
+        ],
+    )
+    output = render_text_report(report)
+    assert "Error Summary" in output
+    assert "age" in output
+    assert "INVALID_INTEGER" in output
+    assert "OUT_OF_RANGE" in output
+    assert "status" in output
+    assert "INVALID_ENUM" in output
+
+
+def test_text_report_error_summary_not_shown_when_no_errors():
+    report = _make_report(
+        results=[
+            ValidationResult(row=1, column="age", value="30", level="PASS", code="OK", message="ok"),
+        ],
+    )
+    output = render_text_report(report)
+    assert "Error Summary" not in output
