@@ -8,7 +8,7 @@ from dataguard.output_factory import get_output_writer
 from dataguard.exceptions import ParseFailure, SchemaFailure
 from dataguard.parser.factory import get_parser
 from dataguard.reporter.assemble import assemble_report
-from dataguard.reporter.json_report import render_json_report
+from dataguard.reporter import get_report_renderer
 from dataguard.schema.engine import validate_records
 from dataguard.schema.loader import load_schema
 from dataguard.transformer.engine import apply_transforms
@@ -24,7 +24,7 @@ def main():
 @click.option("--input", "input_path", required=True)
 @click.option("--schema", "schema_path", required=True)
 @click.option("--report", "report_path")
-@click.option("--format", "report_format", type=click.Choice(["json"]), default="json")
+@click.option("--format", "report_format", type=click.Choice(["json", "text"]), default="json")
 @click.option("--limit", default=20, type=int)
 def validate(input_path, schema_path, report_path, report_format, limit):
     if not report_path:
@@ -58,8 +58,13 @@ def validate(input_path, schema_path, report_path, report_format, limit):
         parse_errors=parse_result.errors,
     )
 
-    payload = render_json_report(report, limit=limit)
-    Path(report_path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    renderer = get_report_renderer(report_format)
+    rendered = renderer(report, limit=limit)
+
+    if report_format == "json":
+        Path(report_path).write_text(json.dumps(rendered, indent=2), encoding="utf-8")
+    else:
+        Path(report_path).write_text(rendered, encoding="utf-8")
 
     if report.error_count > 0:
         raise SystemExit(1)
@@ -71,7 +76,7 @@ def validate(input_path, schema_path, report_path, report_format, limit):
 @click.option("--transforms", "transforms_path", required=True)
 @click.option("--output", "output_path", required=True)
 @click.option("--report", "report_path", required=True)
-@click.option("--format", "report_format", type=click.Choice(["json"]), default="json")
+@click.option("--format", "report_format", type=click.Choice(["json", "text"]), default="json")
 @click.option("--limit", default=20, type=int)
 def clean(input_path, schema_path, transforms_path, output_path, report_path, report_format, limit):
     try:
@@ -124,8 +129,13 @@ def clean(input_path, schema_path, transforms_path, output_path, report_path, re
         parse_errors=parse_result.errors,
     )
 
-    payload = render_json_report(report, limit=limit)
-    Path(report_path).write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    renderer = get_report_renderer(report_format)
+    rendered = renderer(report, limit=limit)
+
+    if report_format == "json":
+        Path(report_path).write_text(json.dumps(rendered, indent=2), encoding="utf-8")
+    else:
+        Path(report_path).write_text(rendered, encoding="utf-8")
 
     if report.error_count > 0:
         raise SystemExit(1)
