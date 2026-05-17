@@ -8,8 +8,8 @@ Implement report generation (text + JSON) and CLI commands (validate/convert/cle
 ## Scope Decisions
 - CLI includes validate, convert, clean commands
 - Reporter only renders output; CLI assembles Report model
-- Default output writes to file only when --report is provided
-- Error handling: short stderr message + suggestion, exit code 2
+- `--report` is required for validate and clean; output is always written to file
+- Error handling: short stderr message, exit code 1 for runtime errors
 - Text/JSON reports include summary + per-column stats + first N error details (default 20, configurable)
 
 ## Architecture Overview
@@ -20,36 +20,40 @@ Implement report generation (text + JSON) and CLI commands (validate/convert/cle
 
 ## Data Flow
 validate:
-  read input -> parse -> load schema -> validate -> build Report -> write report
+  parse input -> load schema -> validate records -> build Report -> write report
 
 convert:
-  read input -> transform -> write output
+  parse input -> write output (format determined by output file extension)
 
 clean:
-  read input -> validate -> transform -> write output -> write report
+  parse input -> load transforms -> apply transforms -> validate transformed records -> filter valid rows -> write clean output -> write report
 
 ## Report Content
 Text report:
 - Summary: total, pass/warning/error counts
-- Column stats: error codes per column
-- Error details: first N items (row, column, value, code, message)
+- Parse errors: row and message for each parse error
+- Validation error details: first N items (row, column, code, message)
 
 JSON report:
-- Summary + column stats + first N error details
+- Summary: source_file, schema_name, timestamp, total_rows, pass_count, warning_count, parse_error_count, validation_error_count, error_count
+- error_summary: error codes per column
+- parse_errors: row and message for each parse error
+- details: first N validation result items (row, column, value, level, code, message)
 - Limit N configurable by CLI parameter (default 20)
 
 ## CLI Behavior
-- validate --input --schema [--report] [--format text|json] [--limit N]
+- validate --input --schema --report [--format json|text] [--limit N]
 - convert --input --output
-- clean --input --schema --output [--report] [--format text|json] [--limit N]
+- clean --input --schema --transforms --output --report [--format json|text] [--limit N]
 
 Errors:
-- Print short stderr message + suggestion
-- Exit code 2 for runtime errors
+- Print short stderr message
+- Exit code 1 for runtime errors (file not found, invalid schema, parse failure, unsupported format)
+- Exit code 2 for CLI usage errors (missing required options)
 
 ## Design Approval
 Approved by user for:
 - Full Phase 4 scope (text/json reports + validate/convert/clean)
 - Report detail level and configurable limit
-- Output behavior requiring --report for file writes
-- Error handling with short stderr message and exit code 2
+- `--report` required for validate and clean
+- Error handling with exit code 1 for runtime errors
