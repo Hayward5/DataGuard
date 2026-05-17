@@ -30,4 +30,11 @@ def render_text_report(report: Report, limit: int = 20) -> str:
             lines.append(f"  Row {detail.row}, column '{detail.column}': {detail.code} - {detail.message}")
         lines.append("")
 
+    if report.error_summary:
+        lines.append("Error Summary:")
+        for column, codes in report.error_summary.items():
+            code_parts = ", ".join(f"{code} x{count}" for code, count in codes.items())
+            lines.append(f"  {column}: {code_parts}")
+        lines.append("")
+
     return "\n".join(lines)
