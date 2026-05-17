@@ -227,3 +227,55 @@ def test_validate_flow_strict_schema_reports_unknown_columns(tmp_path):
     payload = json.loads(report_path.read_text(encoding="utf-8"))
     assert payload["summary"]["validation_error_count"] == 1
     assert payload["error_summary"]["extra_note"]["UNKNOWN_COLUMN"] == 1
+
+
+def test_validate_flow_text_format_writes_text_report(tmp_path):
+    runner = CliRunner()
+
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "validate" / "valid"
+    input_path = fixture_root / "csv_employees_valid.csv"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.txt"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--report", str(report_path),
+            "--format", "text",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert report_path.exists()
+
+    content = report_path.read_text(encoding="utf-8")
+    assert "DataGuard" in content
+    assert "employees" in content
+
+
+def test_validate_flow_text_format_includes_errors(tmp_path):
+    runner = CliRunner()
+
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "validate" / "invalid"
+    input_path = fixture_root / "csv_employees_invalid.csv"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.txt"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--report", str(report_path),
+            "--format", "text",
+        ],
+    )
+
+    assert result.exit_code == 1, result.output
+
+    content = report_path.read_text(encoding="utf-8")
+    assert "Errors" in content or "errors" in content
