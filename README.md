@@ -110,3 +110,13 @@ Run the test suite:
 ```bash
 UV_CACHE_DIR=/tmp/uv-cache uv run pytest -q
 ```
+
+## Contributing
+
+We follow a standard GitHub workflow:
+
+1. Create an issue describing the change
+2. Create a branch named `issue-<number>-<description>`
+3. Make changes and write tests
+4. Open a PR against `main`
+5. CI must pass before merge
