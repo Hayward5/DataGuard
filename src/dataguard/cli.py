@@ -3,7 +3,6 @@ from pathlib import Path
 
 import click
 
-from dataguard.output import write_csv_output
 from dataguard.output_factory import get_output_writer
 from dataguard.exceptions import ParseFailure, SchemaFailure
 from dataguard.parser.factory import get_parser
@@ -118,8 +117,12 @@ def clean(input_path, schema_path, transforms_path, output_path, report_path, re
         if not row_has_error.get(index, False)
     ]
 
-    fieldnames = list(transformed_records[0].keys()) if transformed_records else []
-    write_csv_output(clean_records, output_path, fieldnames=fieldnames)
+    try:
+        writer = get_output_writer(Path(output_path))
+    except ValueError as exc:
+        raise click.ClickException(str(exc)) from exc
+
+    writer(clean_records, output_path)
 
     report = assemble_report(
         source_file=input_path,

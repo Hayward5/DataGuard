@@ -241,3 +241,61 @@ def test_clean_flow_jsonl_invalid_input_filters_rows_and_exits_1(tmp_path):
     cleaned = output_path.read_text(encoding="utf-8")
     assert "EMP-001" in cleaned
     assert "EMP-002" not in cleaned
+
+
+def test_clean_flow_output_json_format(tmp_path):
+    runner = CliRunner()
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "clean"
+    input_path = fixture_root / "valid" / "csv_clean_valid.csv"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    transforms_path = fixture_root / "config" / "clean_transforms.yaml"
+    output_path = tmp_path / "clean.json"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "clean",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--transforms", str(transforms_path),
+            "--output", str(output_path),
+            "--report", str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert output_path.exists()
+
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    assert isinstance(payload, list)
+    assert payload[0]["employee_id"] == "EMP-001"
+
+
+def test_clean_flow_output_jsonl_format(tmp_path):
+    runner = CliRunner()
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "clean"
+    input_path = fixture_root / "valid" / "csv_clean_valid.csv"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    transforms_path = fixture_root / "config" / "clean_transforms.yaml"
+    output_path = tmp_path / "clean.jsonl"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "clean",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--transforms", str(transforms_path),
+            "--output", str(output_path),
+            "--report", str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert output_path.exists()
+
+    lines = output_path.read_text(encoding="utf-8").splitlines()
+    assert len(lines) >= 1
+    assert json.loads(lines[0])["employee_id"] == "EMP-001"
