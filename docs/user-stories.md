@@ -4,7 +4,7 @@
 > 每個 Story 包含情境說明、使用目的、CLI 指令範例，以及預期的執行結果。
 > 適合非資訊專業人員快速了解這個工具能做什麼、如何使用。
 >
-> **最後更新：Week 12**
+> **最後更新：Issue #13**
 
 ---
 
@@ -82,6 +82,11 @@ Validation Errors (3 shown, limit=20):
   Row 2, column 'age': OUT_OF_RANGE - Value out of range
   Row 4, column 'status': INVALID_ENUM - Invalid enum value
   Row 6, column 'join_date': INVALID_DATE_FORMAT - Invalid date format
+
+Error Summary:
+  age: OUT_OF_RANGE x1
+  status: INVALID_ENUM x1
+  join_date: INVALID_DATE_FORMAT x1
 ```
 
 > 備註：`--format json` 為預設值，不指定時輸出 JSON 格式。
@@ -161,10 +166,12 @@ dataguard clean \
 ```
 
 **結果：**
-- `clean_employees.csv`：清理後通過驗證的合法資料
+- `clean_employees.csv`：清理後通過驗證的合法資料（輸出格式由副檔名決定）
 - `clean-report.json`：清理後的驗證結果報告
 - 若資料有錯誤（但被過濾掉）→ exit code `1`
 - 所有資料通過驗證 → exit code `0`
+
+> 備註：`--output` 支援 `.csv`、`.json`、`.jsonl`，副檔名決定輸出格式。
 
 ---
 
@@ -181,7 +188,7 @@ dataguard clean \
 transforms:
   - operation: dedup
     keys: [employee_id]
-    keep: first   # 也可以設定 last，保留最後一筆
+    keep: first   # first：保留第一筆 / last：保留最後一筆 / none：全部刪除
 ```
 
 **搭配 clean 指令：**
@@ -195,7 +202,12 @@ dataguard clean \
 ```
 
 **結果：**
-重複的 `employee_id` 會被移除，依據 `keep` 設定保留第一筆或最後一筆。
+
+| `keep` 設定 | 行為 |
+|-------------|------|
+| `first` | 每個 key 保留第一筆出現的記錄 |
+| `last` | 每個 key 保留最後一筆出現的記錄 |
+| `none` | 只要有重複 key，所有相關記錄全部刪除（無一保留） |
 
 ---
 
@@ -225,8 +237,13 @@ transforms:
 ```
 
 **結果：**
-- `strategy: default`：空值欄位填入指定 value
-- `strategy: drop_row`：含空值的整列被移除
+
+| 策略 | 行為 |
+|------|------|
+| `default` | 空值欄位填入指定 `value` |
+| `drop_row` | 含空值的整列被移除 |
+| `forward_fill` | 空值填入前一筆非空值；若前面都是空值則保留空值 |
+| `mean` | 空值填入該欄位所有有效數值的平均值（數字欄位限定） |
 
 ---
 
@@ -330,7 +347,68 @@ transforms:
 
 ---
 
-## User Story 11：將 CSV、JSON、JSONL 格式互相轉換
+## User Story 11：自動轉換日期格式
+
+**情境：**
+資料來源的日期格式不一致，有些欄位是 `2026/04/15`，有些是 `04-15-2026`，但 schema 要求格式必須是 `2026-04-15`。
+
+**我想要做什麼：**
+在驗證前自動把各種日期格式統一轉換成目標格式，不需要手動整理原始資料。
+
+**Transforms 設定：**
+```yaml
+transforms:
+  - operation: date_format
+    column: join_date
+    source_formats:
+      - "%Y/%m/%d"
+      - "%m-%d-%Y"
+    target_format: "%Y-%m-%d"
+```
+
+**結果：**
+- 程式依序嘗試 `source_formats` 中的格式，第一個成功解析的就採用
+- 成功則輸出 `target_format` 指定的格式
+- 所有格式都無法解析時保留原始值，不中斷流程
+
+---
+
+## User Story 12：清理後輸出 JSON 或 JSONL 格式
+
+**情境：**
+我想清理資料後直接輸出 JSON，供 API 或下游系統使用，不需要再手動轉換格式。
+
+**我想要做什麼：**
+讓 `clean` 的輸出格式由 `--output` 的副檔名自動決定，支援 CSV、JSON、JSONL。
+
+**輸出為 JSON：**
+```bash
+dataguard clean \
+  --input raw_employees.csv \
+  --schema schemas/employees.yaml \
+  --transforms transforms.yaml \
+  --output clean.json \
+  --report report.json
+```
+
+**輸出為 JSONL：**
+```bash
+dataguard clean \
+  --input raw_employees.csv \
+  --schema schemas/employees.yaml \
+  --transforms transforms.yaml \
+  --output clean.jsonl \
+  --report report.json
+```
+
+**結果：**
+- `clean.json`：合法資料列的 JSON array 格式
+- `clean.jsonl`：合法資料列的 JSONL（每行一筆）格式
+- 輸出格式完全由副檔名決定，不需要額外參數
+
+---
+
+## User Story 13：將 CSV、JSON、JSONL 格式互相轉換
 
 **情境：**
 我有 CSV 格式的資料，但下游系統需要 JSON。或者我有 JSONL 日誌，要轉成 CSV 給 Excel 分析。
@@ -372,7 +450,7 @@ dataguard convert \
 
 ---
 
-## User Story 12：限制報告中顯示的錯誤數量
+## User Story 14：限制報告中顯示的錯誤數量
 
 **情境：**
 大型資料集可能有幾百筆錯誤，我不需要看全部，只想先確認前幾筆錯誤的類型。
@@ -415,7 +493,7 @@ dataguard clean \
   --input <資料檔案路徑>     # 必填，支援 .csv / .json / .jsonl
   --schema <schema 路徑>     # 必填，YAML 格式
   --transforms <transforms 路徑>  # 必填，YAML 格式
-  --output <輸出 CSV 路徑>   # 必填
+  --output <輸出檔案路徑>   # 必填，支援 .csv / .json / .jsonl，副檔名決定輸出格式
   --report <報告輸出路徑>    # 必填
   --format <json|text>       # 選填，預設 json
   --limit <數字>             # 選填，預設 20
@@ -430,7 +508,7 @@ dataguard convert \
 
 ---
 
-## 目前完成狀態（Week 12）
+## 目前完成狀態
 
 | 功能 | 狀態 |
 |------|------|
@@ -438,11 +516,12 @@ dataguard convert \
 | clean 指令 | ✅ 完成 |
 | convert 指令 | ✅ 完成 |
 | JSON 報告格式 | ✅ 完成 |
-| Text 報告格式 | ✅ 完成 |
+| Text 報告格式（含 Error Summary） | ✅ 完成 |
 | type_cast transformer | ✅ 完成 |
-| fill_missing transformer | ✅ 完成（default、drop_row） |
-| dedup transformer | ✅ 完成（first、last） |
+| fill_missing transformer | ✅ 完成（default、drop_row、forward_fill、mean） |
+| dedup transformer | ✅ 完成（first、last、none） |
 | field_map transformer | ✅ 完成（rename、drop） |
+| date_format transformer | ✅ 完成 |
 | CSV / JSON / JSONL 輸入 | ✅ 完成 |
-| CSV / JSON / JSONL 輸出 | ✅ 完成 |
-| 自動化測試 | ✅ 100 tests，95% coverage |
+| CSV / JSON / JSONL 輸出（validate、convert、clean） | ✅ 完成 |
+| 自動化測試 | ✅ 125 tests，95% coverage |
