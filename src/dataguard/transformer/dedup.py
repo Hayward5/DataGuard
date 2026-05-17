@@ -23,4 +23,15 @@ def dedup(records, transform):
             latest[key] = dict(record)
         return [latest[key] for key in order]
 
+    if keep == "none":
+        from collections import Counter
+        key_counts = Counter(
+            tuple(record.get(field) for field in keys) for record in records
+        )
+        return [
+            dict(record)
+            for record in records
+            if key_counts[tuple(record.get(field) for field in keys)] == 1
+        ]
+
     raise ValueError(f"Unsupported dedup keep mode: {keep}")

@@ -1,0 +1,14 @@
+transforms:
+  - operation: dedup
+    keys: [employee_id]
+    keep: first
+  - operation: date_format
+    column: join_date
+    source_formats: ["%Y/%m/%d", "%m-%d-%Y"]
+    target_format: "%Y-%m-%d"
+  - operation: fill_missing
+    column: age
+    strategy: forward_fill
+  - operation: type_cast
+    column: age
+    target_type: integer

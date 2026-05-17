@@ -4,6 +4,7 @@ Operation = Callable[[list[dict[str, Any]], dict[str, Any]], list[dict[str, Any]
 
 
 def apply_transforms(records: list[dict[str, Any]], transforms: list[dict[str, Any]]):
+    from dataguard.transformer.date_format import date_format
     from dataguard.transformer.dedup import dedup
     from dataguard.transformer.field_map import field_map
     from dataguard.transformer.fill_missing import fill_missing
@@ -14,6 +15,7 @@ def apply_transforms(records: list[dict[str, Any]], transforms: list[dict[str, A
         "fill_missing": fill_missing,
         "dedup": dedup,
         "field_map": field_map,
+        "date_format": date_format,
     }
 
     current = [dict(record) for record in records]
