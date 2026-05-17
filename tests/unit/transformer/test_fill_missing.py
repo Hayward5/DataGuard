@@ -20,3 +20,60 @@ def test_fill_missing_drop_row_removes_records_with_missing_values():
     )
 
     assert result == [{"age": 20}]
+
+
+def test_fill_missing_forward_fill_uses_previous_non_missing_value():
+    from dataguard.transformer.fill_missing import fill_missing
+
+    records = [{"age": 20}, {"age": None}, {"age": ""}, {"age": 30}]
+    result = fill_missing(
+        records,
+        {"column": "age", "strategy": "forward_fill"},
+    )
+
+    assert result[0]["age"] == 20
+    assert result[1]["age"] == 20
+    assert result[2]["age"] == 20
+    assert result[3]["age"] == 30
+
+
+def test_fill_missing_forward_fill_keeps_original_when_no_prior_value():
+    from dataguard.transformer.fill_missing import fill_missing
+
+    records = [{"age": None}, {"age": 20}]
+    result = fill_missing(
+        records,
+        {"column": "age", "strategy": "forward_fill"},
+    )
+
+    assert result[0]["age"] is None
+    assert result[1]["age"] == 20
+
+
+def test_fill_missing_mean_fills_with_numeric_average():
+    from dataguard.transformer.fill_missing import fill_missing
+
+    records = [{"age": 10}, {"age": None}, {"age": 30}, {"age": ""}]
+    result = fill_missing(
+        records,
+        {"column": "age", "strategy": "mean"},
+    )
+
+    assert result[0]["age"] == 10
+    assert result[1]["age"] == 20.0
+    assert result[2]["age"] == 30
+    assert result[3]["age"] == 20.0
+
+
+def test_fill_missing_mean_keeps_original_when_no_valid_numeric_values():
+    from dataguard.transformer.fill_missing import fill_missing
+
+    records = [{"age": None}, {"age": ""}]
+    result = fill_missing(
+        records,
+        {"column": "age", "strategy": "mean"},
+    )
+
+    assert result[0]["age"] is None
+    assert result[1]["age"] == ""
+
