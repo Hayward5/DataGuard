@@ -279,3 +279,73 @@ def test_validate_flow_text_format_includes_errors(tmp_path):
 
     content = report_path.read_text(encoding="utf-8")
     assert "Errors" in content or "errors" in content
+
+
+def test_validate_flow_json_invalid_fixture_reports_errors(tmp_path):
+    runner = CliRunner()
+
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "validate" / "invalid"
+    input_path = fixture_root / "json_employees_invalid.json"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--report", str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 1, result.output
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["error_count"] == 8
+
+
+def test_validate_flow_jsonl_invalid_fixture_reports_errors(tmp_path):
+    runner = CliRunner()
+
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "validate" / "invalid"
+    input_path = fixture_root / "jsonl_employees_invalid.jsonl"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--report", str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 1, result.output
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["error_count"] == 8
+
+
+def test_validate_flow_empty_csv_returns_zero_errors(tmp_path):
+    runner = CliRunner()
+
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "validate" / "edge"
+    input_path = fixture_root / "csv_employees_edge_empty.csv"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--report", str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["total_rows"] == 0
+    assert payload["summary"]["error_count"] == 0

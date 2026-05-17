@@ -159,3 +159,45 @@ def test_convert_reports_invalid_json_input(tmp_path):
 
     assert result.exit_code == 1
     assert "Invalid JSON input" in result.output
+
+
+def test_convert_flow_empty_csv_writes_empty_output(tmp_path):
+    runner = CliRunner()
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "convert" / "edge"
+    input_path = fixture_root / "csv_convert_edge_empty.csv"
+    output_path = tmp_path / "converted.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "convert",
+            "--input", str(input_path),
+            "--output", str(output_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert output_path.exists()
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    assert payload == []
+
+
+def test_convert_flow_jsonl_bad_line_skips_invalid_and_converts_valid(tmp_path):
+    runner = CliRunner()
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "convert" / "edge"
+    input_path = fixture_root / "jsonl_convert_edge_bad_line.jsonl"
+    output_path = tmp_path / "converted.csv"
+
+    result = runner.invoke(
+        main,
+        [
+            "convert",
+            "--input", str(input_path),
+            "--output", str(output_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert output_path.exists()
+    content = output_path.read_text(encoding="utf-8")
+    assert "EMP-001" in content
