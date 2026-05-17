@@ -86,3 +86,39 @@ def test_clean_flow_jsonl_input_writes_clean_csv_output(tmp_path):
 
     assert result.exit_code == 0, result.output
     assert output_path.exists()
+
+
+def test_clean_flow_field_map_renames_and_drops_columns(tmp_path):
+    runner = CliRunner()
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "clean"
+    input_path = fixture_root / "valid" / "csv_field_map_valid.csv"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    transforms_path = fixture_root / "config" / "field_map_transforms.yaml"
+    output_path = tmp_path / "clean.csv"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "clean",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--transforms", str(transforms_path),
+            "--output", str(output_path),
+            "--report", str(report_path),
+            "--format", "json",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert output_path.exists()
+
+    cleaned = output_path.read_text(encoding="utf-8")
+    assert "employee_id" in cleaned
+    assert "emp_id" not in cleaned
+    assert "notes" not in cleaned
+    assert "EMP-001" in cleaned
+    assert "EMP-002" in cleaned
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["error_count"] == 0

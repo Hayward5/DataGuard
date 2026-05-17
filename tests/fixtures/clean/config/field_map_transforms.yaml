@@ -1,0 +1,9 @@
+transforms:
+  - operation: field_map
+    rename:
+      emp_id: employee_id
+    drop:
+      - notes
+  - operation: type_cast
+    column: age
+    target_type: integer
