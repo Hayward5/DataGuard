@@ -1,11 +1,12 @@
 import csv
 
 from dataguard.parser.base import BaseParser, ParseErrorItem, ParseResult
+from dataguard.parser.encoding import detect_encoding
 
 
 class CsvParser(BaseParser):
     def parse(self, file_path: str, encoding: str | None = None) -> ParseResult:
-        file_encoding = encoding or "utf-8"
+        file_encoding = encoding or detect_encoding(file_path)
 
         with open(file_path, encoding=file_encoding, newline="") as handle:
             sample = handle.read(1024)

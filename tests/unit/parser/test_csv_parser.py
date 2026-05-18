@@ -56,3 +56,27 @@ def test_csv_parser_reports_mismatched_columns(tmp_path):
     assert result.errors[0].row == 3
     assert "mismatched" in result.errors[0].message.lower()
     assert result.metadata["delimiter"] == ","
+
+
+def test_csv_parser_detects_non_utf8_encoding_when_not_provided(tmp_path):
+    from dataguard.parser.csv_parser import CsvParser
+
+    csv_path = tmp_path / "employees.csv"
+    csv_path.write_bytes("id,name\n1,Jos\u00e9\n".encode("utf-16-le"))
+
+    result = CsvParser().parse(str(csv_path))
+
+    assert result.records == [{"id": "1", "name": "Jos\u00e9"}]
+    assert result.errors == []
+
+
+def test_csv_parser_uses_explicit_encoding_when_provided(tmp_path):
+    from dataguard.parser.csv_parser import CsvParser
+
+    csv_path = tmp_path / "employees.csv"
+    csv_path.write_bytes("id,name\n1,Jos\u00e9\n".encode("utf-16-le"))
+
+    result = CsvParser().parse(str(csv_path), encoding="utf-16-le")
+
+    assert result.records == [{"id": "1", "name": "Jos\u00e9"}]
+    assert result.errors == []

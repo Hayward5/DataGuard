@@ -102,6 +102,58 @@ def test_validate_flow_json_valid_fixture(tmp_path):
     assert payload["summary"]["error_count"] == 0
 
 
+def test_validate_flow_csv_non_utf8_fixture(tmp_path):
+    runner = CliRunner()
+
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "validate" / "valid"
+    input_path = fixture_root / "csv_employees_utf16le.csv"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input",
+            str(input_path),
+            "--schema",
+            str(schema_path),
+            "--report",
+            str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["error_count"] == 0
+
+
+def test_validate_flow_json_non_utf8_fixture(tmp_path):
+    runner = CliRunner()
+
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "validate" / "valid"
+    input_path = fixture_root / "json_employees_utf16le.json"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input",
+            str(input_path),
+            "--schema",
+            str(schema_path),
+            "--report",
+            str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["error_count"] == 0
+
+
 def test_validate_flow_jsonl_valid_fixture(tmp_path):
     runner = CliRunner()
 
