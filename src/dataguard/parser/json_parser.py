@@ -2,11 +2,12 @@ import json
 
 from dataguard.exceptions import ParseFailure
 from dataguard.parser.base import BaseParser, ParseErrorItem, ParseResult
+from dataguard.parser.encoding import detect_encoding
 
 
 class JsonParser(BaseParser):
     def parse(self, file_path: str, encoding: str | None = None) -> ParseResult:
-        file_encoding = encoding or "utf-8"
+        file_encoding = encoding or detect_encoding(file_path)
 
         with open(file_path, encoding=file_encoding) as handle:
             content = handle.read().strip()
