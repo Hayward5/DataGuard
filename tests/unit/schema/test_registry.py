@@ -34,3 +34,13 @@ def test_registry_returns_string_integer_enum_boolean_and_date_validators():
         get_validator(ColumnSchema(name="join_date", type="string", format="date")),
         DateValidator,
     )
+
+
+def test_registry_rejects_unknown_validator_type():
+    import pytest
+
+    from dataguard.schema.models import ColumnSchema
+    from dataguard.schema.registry import get_validator
+
+    with pytest.raises(ValueError, match="Unsupported validator type: unknown"):
+        get_validator(ColumnSchema(name="custom", type="unknown"))
