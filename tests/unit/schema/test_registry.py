@@ -1,9 +1,10 @@
-def test_registry_returns_string_integer_enum_boolean_and_date_validators():
+def test_registry_returns_string_integer_enum_boolean_float_and_date_validators():
     from dataguard.schema.models import ColumnSchema
     from dataguard.schema.registry import get_validator
     from dataguard.schema.validators.boolean import BooleanValidator
     from dataguard.schema.validators.date import DateValidator
     from dataguard.schema.validators.enum import EnumValidator
+    from dataguard.schema.validators.float_validator import FloatValidator
     from dataguard.schema.validators.numeric import IntegerValidator
     from dataguard.schema.validators.string import StringValidator
 
@@ -14,6 +15,10 @@ def test_registry_returns_string_integer_enum_boolean_and_date_validators():
     assert isinstance(
         get_validator(ColumnSchema(name="age", type="integer")),
         IntegerValidator,
+    )
+    assert isinstance(
+        get_validator(ColumnSchema(name="score", type="float")),
+        FloatValidator,
     )
     assert isinstance(
         get_validator(ColumnSchema(name="status", type="enum", values=["ACTIVE"])),

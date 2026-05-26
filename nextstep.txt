@@ -1,0 +1,39 @@
+還有幾個可以繼續做的方向，按優先順序看：
+
+  建議優先做
+
+  1. Schema type: float validator
+     type_cast 已支援 float，但 schema validator 不支援 type: float。目前 src/dataguard/schema/registry.py:8 只有 string /
+     integer / enum / boolean / date。這是最明確的功能缺口。
+  2. JSON root 結構驗證
+     src/dataguard/parser/json_parser.py:27 直接 json.loads(content) 後回傳資料，若輸入是單一 JSON object 而不是 array，後續
+     validate / convert 可能行為不合理。應明確規定：JSON 檔必須是 array，JSONL 每行必須是 object；不符合就回 ParseFailure。
+  3. 補 clean/edge/ fixtures
+     目前只有 clean/valid、clean/invalid、clean/config，沒有 clean/edge。可以補 header-only CSV、空 JSON array、空 JSONL，測
+     clean 是否 exit 0、輸出空檔或只有 header、report count 正確。
+  4. 補 convert/invalid/ fixtures
+     現在 convert 的錯誤案例多半用 tmp_path 即時建立，沒有具名 invalid fixtures。可以補 malformed JSON、JSON object root、非
+     record array、欄位不一致等。
+
+  設計決策型工作
+  5. case_sensitive 要實作或移除
+  src/dataguard/schema/models.py:15 有 case_sensitive，但 enum/string validator 沒用它。若保留，應讓 enum values 與 pattern/
+  string 比對支援大小寫不敏感；不保留就移除避免誤導。
+
+  6. WARNING level 要實作或簡化
+     src/dataguard/schema/results.py:10 和 reporter 都支援 WARNING，但目前沒有任何 validator 會產生 WARNING。可以定義 warning 規
+     則，或從模型與報告中移除。
+  7. 輸出錯誤處理
+     src/dataguard/exceptions.py:13 已定義但未使用。writer 失敗時目前多半會讓底層 I/O 例外冒出；可以包成清楚的 CLI error。
+
+  文件與維護
+  8. 更新 README / backlog
+  README 還寫 transformer 只有 type_cast、fill_missing、dedup，沒有 field_map / date_format；docs/20260517-backlog.md 也有部分項
+  目已完成但未更新，例如 encoding detection、幾個 unit tests。
+
+  9. 補 coverage 缺口
+     coverage 剩餘缺口主要在 CLI error branches、schema loader 異常路徑、reporter invalid format、transformer 少數錯誤分支。這些
+     是小而穩的測試任務。
+
+  更大的 future work 則是 Excel input、streaming large files、datetime validator。若要下一步最有價值，我會先做 type: float
+  validator，範圍小、需求清楚、很適合用 TDD 補完。
