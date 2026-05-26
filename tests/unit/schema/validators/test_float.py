@@ -19,7 +19,7 @@ import pytest
 )
 def test_float_validator_checks_boundaries(value, code):
     from dataguard.schema.models import ColumnSchema
-    from dataguard.schema.validators.float import FloatValidator
+    from dataguard.schema.validators.float_validator import FloatValidator
 
     validator = FloatValidator(
         ColumnSchema(name="score", type="float", min=1.0, max=10.0)
@@ -29,7 +29,7 @@ def test_float_validator_checks_boundaries(value, code):
 
 def test_float_validator_no_min_max():
     from dataguard.schema.models import ColumnSchema
-    from dataguard.schema.validators.float import FloatValidator
+    from dataguard.schema.validators.float_validator import FloatValidator
 
     validator = FloatValidator(ColumnSchema(name="ratio", type="float"))
     assert validator.validate("3.14").code == "OK"
@@ -39,7 +39,7 @@ def test_float_validator_no_min_max():
 
 def test_float_validator_boundary_values_are_valid():
     from dataguard.schema.models import ColumnSchema
-    from dataguard.schema.validators.float import FloatValidator
+    from dataguard.schema.validators.float_validator import FloatValidator
 
     validator = FloatValidator(
         ColumnSchema(name="score", type="float", min=1.0, max=10.0)
