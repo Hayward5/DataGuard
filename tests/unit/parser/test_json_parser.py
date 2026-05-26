@@ -98,3 +98,19 @@ def test_json_parser_skips_non_object_items_in_array_and_reports_error(tmp_path)
     assert len(result.errors) == 1
     assert result.errors[0].row == 2
     assert result.errors[0].message == "Expected object, got str"
+
+
+def test_jsonl_parser_reports_error_when_line_is_not_object(tmp_path):
+    from dataguard.parser.json_parser import JsonParser
+
+    jsonl_path = tmp_path / "data.jsonl"
+    jsonl_path.write_text(
+        '{"id": 1}\n["not", "object"]\n{"id": 2}\n', encoding="utf-8"
+    )
+
+    result = JsonParser().parse(str(jsonl_path))
+
+    assert result.records == [{"id": 1}, {"id": 2}]
+    assert len(result.errors) == 1
+    assert result.errors[0].row == 2
+    assert result.errors[0].message == "Expected object, got list"
