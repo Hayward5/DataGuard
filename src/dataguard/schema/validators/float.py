@@ -8,7 +8,7 @@ class FloatValidator(BaseValidator):
         except (TypeError, ValueError):
             return ValidationMessage(code="INVALID_FLOAT", message="Invalid float")
 
-        if self.schema.min is not None and parsed > 0 and parsed < self.schema.min:
+        if self.schema.min is not None and parsed < self.schema.min:
             return ValidationMessage(code="OUT_OF_RANGE", message="Below min")
         if self.schema.max is not None and parsed > self.schema.max:
             return ValidationMessage(code="OUT_OF_RANGE", message="Above max")

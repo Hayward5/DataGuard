@@ -5,11 +5,12 @@ import pytest
     ("value", "code"),
     [
         (1.5,    "OK"),
-        (0.0,    "OK"),
-        (-1.5,   "OK"),
+        (5.0,    "OK"),
         (1,      "OK"),      # int 可轉 float
         ("3.14", "OK"),      # 字串數字可轉 float
         (0.5,    "OUT_OF_RANGE"),   # 低於 min=1.0
+        (0.0,    "OUT_OF_RANGE"),   # 低於 min=1.0
+        (-1.5,   "OUT_OF_RANGE"),   # 低於 min=1.0
         (10.1,   "OUT_OF_RANGE"),   # 高於 max=10.0
         ("abc",  "INVALID_FLOAT"),
         (None,   "INVALID_FLOAT"),
