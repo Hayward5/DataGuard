@@ -114,3 +114,27 @@ def test_jsonl_parser_reports_error_when_line_is_not_object(tmp_path):
     assert len(result.errors) == 1
     assert result.errors[0].row == 2
     assert result.errors[0].message == "Expected object, got list"
+
+
+def test_json_parser_returns_empty_result_for_empty_json_file(tmp_path):
+    from dataguard.parser.json_parser import JsonParser
+
+    empty_path = tmp_path / "empty.json"
+    empty_path.write_text("", encoding="utf-8")
+
+    result = JsonParser().parse(str(empty_path))
+
+    assert result.records == []
+    assert result.errors == []
+
+
+def test_json_parser_returns_empty_result_for_empty_jsonl_file(tmp_path):
+    from dataguard.parser.json_parser import JsonParser
+
+    empty_path = tmp_path / "empty.jsonl"
+    empty_path.write_text("", encoding="utf-8")
+
+    result = JsonParser().parse(str(empty_path))
+
+    assert result.records == []
+    assert result.errors == []
