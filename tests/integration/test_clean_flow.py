@@ -332,3 +332,90 @@ def test_clean_flow_output_jsonl_format(tmp_path):
     lines = output_path.read_text(encoding="utf-8").splitlines()
     assert len(lines) >= 1
     assert json.loads(lines[0])["employee_id"] == "EMP-001"
+
+
+def test_clean_flow_empty_csv_exits_0_and_writes_empty_output(tmp_path):
+    runner = CliRunner()
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "clean"
+    input_path = fixture_root / "edge" / "csv_clean_edge_empty.csv"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    transforms_path = fixture_root / "config" / "clean_transforms.yaml"
+    output_path = tmp_path / "clean.csv"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "clean",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--transforms", str(transforms_path),
+            "--output", str(output_path),
+            "--report", str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert output_path.exists()
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["total_rows"] == 0
+    assert payload["summary"]["error_count"] == 0
+
+
+def test_clean_flow_empty_json_exits_0_and_writes_empty_output(tmp_path):
+    runner = CliRunner()
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "clean"
+    input_path = fixture_root / "edge" / "json_clean_edge_empty.json"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    transforms_path = fixture_root / "config" / "clean_transforms.yaml"
+    output_path = tmp_path / "clean.csv"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "clean",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--transforms", str(transforms_path),
+            "--output", str(output_path),
+            "--report", str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert output_path.exists()
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["total_rows"] == 0
+    assert payload["summary"]["error_count"] == 0
+
+
+def test_clean_flow_empty_jsonl_exits_0_and_writes_empty_output(tmp_path):
+    runner = CliRunner()
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "clean"
+    input_path = fixture_root / "edge" / "jsonl_clean_edge_empty.jsonl"
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    transforms_path = fixture_root / "config" / "clean_transforms.yaml"
+    output_path = tmp_path / "clean.csv"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "clean",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--transforms", str(transforms_path),
+            "--output", str(output_path),
+            "--report", str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    assert output_path.exists()
+
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["total_rows"] == 0
+    assert payload["summary"]["error_count"] == 0
