@@ -97,4 +97,4 @@ def test_json_parser_skips_non_object_items_in_array_and_reports_error(tmp_path)
     assert result.records == [{"id": 1}, {"id": 2}]
     assert len(result.errors) == 1
     assert result.errors[0].row == 2
-    assert "str" in result.errors[0].message
+    assert result.errors[0].message == "Expected object, got str"
