@@ -17,6 +17,10 @@ def test_registry_returns_string_integer_enum_boolean_float_and_date_validators(
         IntegerValidator,
     )
     assert isinstance(
+        get_validator(ColumnSchema(name="score", type="float")),
+        FloatValidator,
+    )
+    assert isinstance(
         get_validator(ColumnSchema(name="status", type="enum", values=["ACTIVE"])),
         EnumValidator,
     )
@@ -30,10 +34,6 @@ def test_registry_returns_string_integer_enum_boolean_float_and_date_validators(
             )
         ),
         BooleanValidator,
-    )
-    assert isinstance(
-        get_validator(ColumnSchema(name="score", type="float")),
-        FloatValidator,
     )
     assert isinstance(
         get_validator(ColumnSchema(name="join_date", type="string", format="date")),
