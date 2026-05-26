@@ -55,5 +55,29 @@ def test_json_parser_uses_explicit_encoding_when_provided(tmp_path):
 
     result = JsonParser().parse(str(json_path), encoding="utf-16-le")
 
-    assert result.records == [{"id": 1, "name": "Jos\u00e9"}]
+    assert result.records == [{"id": 1, "name": "José"}]
     assert result.errors == []
+
+
+def test_json_parser_raises_parse_failure_when_root_is_object(tmp_path):
+    import pytest
+    from dataguard.exceptions import ParseFailure
+    from dataguard.parser.json_parser import JsonParser
+
+    json_path = tmp_path / "data.json"
+    json_path.write_text('{"id": 1, "name": "Alice"}', encoding="utf-8")
+
+    with pytest.raises(ParseFailure, match="must be an array"):
+        JsonParser().parse(str(json_path))
+
+
+def test_json_parser_raises_parse_failure_when_root_is_number(tmp_path):
+    import pytest
+    from dataguard.exceptions import ParseFailure
+    from dataguard.parser.json_parser import JsonParser
+
+    json_path = tmp_path / "data.json"
+    json_path.write_text("42", encoding="utf-8")
+
+    with pytest.raises(ParseFailure, match="must be an array"):
+        JsonParser().parse(str(json_path))
