@@ -5,37 +5,34 @@
      新增 FloatValidator，支援 min/max range 驗證。
      src/dataguard/schema/validators/float_validator.py
      148 tests passing。
+  ✅ 2. JSON root 結構驗證（PR #22，2026-05-26）
+     JSON root 非 array → ParseFailure；array 內非 object 元素 → ParseErrorItem；
+     JSONL 每行非 object → ParseErrorItem。
+     154 tests passing。
 
   建議優先做
 
-  1. JSON root 結構驗證
-     src/dataguard/parser/json_parser.py:27 直接 json.loads(content) 後回傳資料，若輸入是單一 JSON object 而不是 array，後續
-     validate / convert 可能行為不合理。應明確規定：JSON 檔必須是 array，JSONL 每行必須是 object；不符合就回 ParseFailure。
-  2. 補 clean/edge/ fixtures
-     目前只有 clean/valid、clean/invalid、clean/config，沒有 clean/edge。可以補 header-only CSV、空 JSON array、空 JSONL，測
-     clean 是否 exit 0、輸出空檔或只有 header、report count 正確。
-  3. 補 convert/invalid/ fixtures
-     現在 convert 的錯誤案例多半用 tmp_path 即時建立，沒有具名 invalid fixtures。可以補 malformed JSON、JSON object root、非
-     record array、欄位不一致等。
+  1. 補 clean/edge/ fixtures
+  2. 補 convert/invalid/ fixtures
 
   設計決策型工作
-  4. case_sensitive 要實作或移除
+  3. case_sensitive 要實作或移除
      src/dataguard/schema/models.py:15 有 case_sensitive，但 enum/string validator 沒用它。若保留，應讓 enum values 與 pattern/
      string 比對支援大小寫不敏感；不保留就移除避免誤導。
 
-  5. WARNING level 要實作或簡化
+  4. WARNING level 要實作或簡化
      src/dataguard/schema/results.py:10 和 reporter 都支援 WARNING，但目前沒有任何 validator 會產生 WARNING。可以定義 warning 規
      則，或從模型與報告中移除。
 
-  6. 輸出錯誤處理
+  5. 輸出錯誤處理
      src/dataguard/exceptions.py:13 已定義但未使用。writer 失敗時目前多半會讓底層 I/O 例外冒出；可以包成清楚的 CLI error。
 
   文件與維護
-  7. 更新 README / backlog
+  6. 更新 README / backlog
      README 還寫 transformer 只有 type_cast、fill_missing、dedup，沒有 field_map / date_format；docs/20260517-backlog.md 也有部分項
      目已完成但未更新，例如 encoding detection、幾個 unit tests、float validator。
 
-  8. 補 coverage 缺口
+  7. 補 coverage 缺口
      coverage 剩餘缺口主要在 CLI error branches、schema loader 異常路徑、reporter invalid format、transformer 少數錯誤分支。這些
      是小而穩的測試任務。
 
