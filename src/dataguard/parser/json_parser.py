@@ -12,6 +12,9 @@ class JsonParser(BaseParser):
         with open(file_path, encoding=file_encoding) as handle:
             content = handle.read().strip()
 
+        if not content:
+            return ParseResult(records=[], errors=[], metadata={})
+
         if content.lstrip().startswith("{") and "\n" in content:
             records = []
             errors = []
