@@ -13,6 +13,7 @@ import pytest
         (10.1,   "OUT_OF_RANGE"),   # 高於 max=10.0
         ("abc",  "INVALID_FLOAT"),
         (None,   "INVALID_FLOAT"),
+        ("",     "INVALID_FLOAT"),
     ],
 )
 def test_float_validator_checks_boundaries(value, code):
@@ -32,6 +33,7 @@ def test_float_validator_no_min_max():
     validator = FloatValidator(ColumnSchema(name="ratio", type="float"))
     assert validator.validate("3.14").code == "OK"
     assert validator.validate("abc").code == "INVALID_FLOAT"
+    assert validator.validate(42).code == "OK"   # int 也應可轉 float
 
 
 def test_float_validator_boundary_values_are_valid():
