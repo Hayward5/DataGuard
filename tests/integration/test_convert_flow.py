@@ -144,8 +144,8 @@ def test_convert_reports_unsupported_input_format(tmp_path):
 
 def test_convert_reports_invalid_json_input(tmp_path):
     runner = CliRunner()
-    input_path = tmp_path / "bad.json"
-    input_path.write_text("{bad json}", encoding="utf-8")
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "convert"
+    input_path = fixture_root / "invalid" / "json_convert_invalid_syntax.json"
     output_path = tmp_path / "out.csv"
 
     result = runner.invoke(
@@ -205,8 +205,8 @@ def test_convert_flow_jsonl_bad_line_skips_invalid_and_converts_valid(tmp_path):
 
 def test_convert_reports_parse_failure_when_json_root_is_object(tmp_path):
     runner = CliRunner()
-    input_path = tmp_path / "bad.json"
-    input_path.write_text('{"id": "EMP-001"}', encoding="utf-8")
+    fixture_root = Path(__file__).parent.parent / "fixtures" / "convert"
+    input_path = fixture_root / "invalid" / "json_convert_invalid_root.json"
     output_path = tmp_path / "out.csv"
 
     result = runner.invoke(
