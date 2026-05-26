@@ -201,3 +201,25 @@ def test_convert_flow_jsonl_bad_line_skips_invalid_and_converts_valid(tmp_path):
     assert output_path.exists()
     content = output_path.read_text(encoding="utf-8")
     assert "EMP-001" in content
+
+
+def test_convert_reports_parse_failure_when_json_root_is_object(tmp_path):
+    from click.testing import CliRunner
+    from dataguard.cli import main
+
+    runner = CliRunner()
+    input_path = tmp_path / "bad.json"
+    input_path.write_text('{"id": "EMP-001"}', encoding="utf-8")
+    output_path = tmp_path / "out.csv"
+
+    result = runner.invoke(
+        main,
+        [
+            "convert",
+            "--input", str(input_path),
+            "--output", str(output_path),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "must be an array" in result.output
