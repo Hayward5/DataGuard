@@ -401,3 +401,24 @@ def test_validate_flow_empty_csv_returns_zero_errors(tmp_path):
     payload = json.loads(report_path.read_text(encoding="utf-8"))
     assert payload["summary"]["total_rows"] == 0
     assert payload["summary"]["error_count"] == 0
+
+
+def test_validate_reports_parse_failure_when_json_root_is_object(tmp_path):
+    runner = CliRunner()
+    input_path = tmp_path / "bad.json"
+    input_path.write_text('{"id": "EMP-001"}', encoding="utf-8")
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--report", str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 1, result.output
+    assert "must be an array" in result.output

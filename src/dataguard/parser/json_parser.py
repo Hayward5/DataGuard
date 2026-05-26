@@ -19,9 +19,19 @@ class JsonParser(BaseParser):
                 if not line.strip():
                     continue
                 try:
-                    records.append(json.loads(line))
+                    item = json.loads(line)
                 except json.JSONDecodeError as exc:
                     errors.append(ParseErrorItem(row=index, message=str(exc)))
+                    continue
+                if not isinstance(item, dict):
+                    errors.append(
+                        ParseErrorItem(
+                            row=index,
+                            message=f"Expected object, got {type(item).__name__}",
+                        )
+                    )
+                else:
+                    records.append(item)
             return ParseResult(records=records, errors=errors, metadata={})
 
         try:
@@ -29,4 +39,22 @@ class JsonParser(BaseParser):
         except json.JSONDecodeError as exc:
             raise ParseFailure(f"Invalid JSON input: {exc}") from exc
 
-        return ParseResult(records=data, errors=[], metadata={})
+        if not isinstance(data, list):
+            raise ParseFailure(
+                f"JSON input must be an array of objects, got {type(data).__name__}"
+            )
+
+        records = []
+        errors = []
+        for index, item in enumerate(data, start=1):
+            if not isinstance(item, dict):
+                errors.append(
+                    ParseErrorItem(
+                        row=index,
+                        message=f"Expected object, got {type(item).__name__}",
+                    )
+                )
+            else:
+                records.append(item)
+
+        return ParseResult(records=records, errors=errors, metadata={})
