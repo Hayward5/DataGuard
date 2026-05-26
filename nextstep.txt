@@ -9,11 +9,17 @@
      JSON root 非 array → ParseFailure；array 內非 object 元素 → ParseErrorItem；
      JSONL 每行非 object → ParseErrorItem。
      154 tests passing。
+  ✅ 3. 補 clean/edge/ fixtures（PR #24，2026-05-26）
+     新增 edge/ 目錄與 3 個空輸入 fixture（CSV/JSON/JSONL）。
+     同時修正空內容 ParseFailure bug（json_parser.py）。
+     159 tests passing。
+  ✅ 4. 補 convert/invalid/ fixtures（PR #25，2026-05-26）
+     新增 invalid/ 目錄與 2 個具名 fixture（語法錯誤、object root）。
+     將 tmp_path 即時建立的測試改用具名 fixture。
+     159 tests passing（行為不變）。
 
-  建議優先做
-
-  1. 補 clean/edge/ fixtures
-  2. 補 convert/invalid/ fixtures
+  設計決策型工作
+  1. case_sensitive 要實作或移除
 
   設計決策型工作
   3. case_sensitive 要實作或移除
