@@ -1,45 +1,58 @@
 還有幾個可以繼續做的方向，按優先順序看：
 
+  目前狀態
+  - main 與 origin/main 同步。
+  - 目前測試：159 passed，coverage 96%。
+  - case_sensitive 與 WARNING 已決定保留但目前不更動、不實作。
+
   已完成
   ✅ 1. Schema type: float validator（PR #20，2026-05-26）
      新增 FloatValidator，支援 min/max range 驗證。
      src/dataguard/schema/validators/float_validator.py
-     148 tests passing。
+
   ✅ 2. JSON root 結構驗證（PR #22，2026-05-26）
      JSON root 非 array → ParseFailure；array 內非 object 元素 → ParseErrorItem；
      JSONL 每行非 object → ParseErrorItem。
-     154 tests passing。
+
   ✅ 3. 補 clean/edge/ fixtures（PR #24，2026-05-26）
      新增 edge/ 目錄與 3 個空輸入 fixture（CSV/JSON/JSONL）。
      同時修正空內容 ParseFailure bug（json_parser.py）。
-     159 tests passing。
+
   ✅ 4. 補 convert/invalid/ fixtures（PR #25，2026-05-26）
      新增 invalid/ 目錄與 2 個具名 fixture（語法錯誤、object root）。
      將 tmp_path 即時建立的測試改用具名 fixture。
-     159 tests passing（行為不變）。
 
-  設計決策型工作
-  1. case_sensitive 要實作或移除
+  ✅ 5. 補齊原 backlog 測試缺口
+     csv_clean_invalid integration test 已存在。
+     boolean schema missing true_values/false_values 測試已存在。
+     schema registry unknown type 測試已存在。
+     transformer loader FileNotFoundError 測試已存在。
 
-  設計決策型工作
-  3. case_sensitive 要實作或移除
-     src/dataguard/schema/models.py:15 有 case_sensitive，但 enum/string validator 沒用它。若保留，應讓 enum values 與 pattern/
-     string 比對支援大小寫不敏感；不保留就移除避免誤導。
+  保留但目前不更動
+  1. case_sensitive
+     src/dataguard/schema/models.py 保留 case_sensitive 欄位。
+     enum/string validator 目前不使用它，現有大小寫敏感行為不更動。
+     README 與 backlog 已註記為 reserved / not currently active。
 
-  4. WARNING level 要實作或簡化
-     src/dataguard/schema/results.py:10 和 reporter 都支援 WARNING，但目前沒有任何 validator 會產生 WARNING。可以定義 warning 規
-     則，或從模型與報告中移除。
+  2. WARNING level
+     src/dataguard/schema/results.py 和 reporter 保留 WARNING / warning_count。
+     目前 validators 不產生 warning，warning_count 預期維持 0。
+     README 與 backlog 已註記為 reserved / not currently active。
 
-  5. 輸出錯誤處理
-     src/dataguard/exceptions.py:13 已定義但未使用。writer 失敗時目前多半會讓底層 I/O 例外冒出；可以包成清楚的 CLI error。
+  接下來建議優先做
+  1. 輸出錯誤處理
+     src/dataguard/exceptions.py 已定義 OutputFailure，但 CLI 寫 output/report 時還沒有統一包裝寫檔失敗。
+     建議將 writer/report write failure 轉成清楚的 click.ClickException，並補 CLI error branch tests。
 
-  文件與維護
-  6. 更新 README / backlog
-     README 還寫 transformer 只有 type_cast、fill_missing、dedup，沒有 field_map / date_format；docs/20260517-backlog.md 也有部分項
-     目已完成但未更新，例如 encoding detection、幾個 unit tests、float validator。
+  2. 更新 README transformer 清單
+     README 目前 transformer operations 還只列 type_cast、fill_missing、dedup。
+     程式實際也支援 field_map 與 date_format，應同步補上。
 
-  7. 補 coverage 缺口
-     coverage 剩餘缺口主要在 CLI error branches、schema loader 異常路徑、reporter invalid format、transformer 少數錯誤分支。這些
-     是小而穩的測試任務。
+  3. 補 coverage 小缺口
+     coverage 剩餘缺口主要在 CLI error branches、schema loader 異常路徑、reporter invalid format、transformer 少數錯誤分支。
+     這些是小而穩的測試任務。
 
-  更大的 future work 則是 Excel input、streaming large files、datetime validator。
+  較大的 future work
+  - Excel input
+  - streaming large files
+  - datetime validator

@@ -200,6 +200,7 @@ def clean(input_path, schema_path, output_path, report_path, report_format, limi
     results = validate_records(schema, parse_result.records)
     
     # 4. Filter records (keep PASS/WARNING, drop ERROR)
+    # Current decision: WARNING is reserved; validators currently do not emit it.
     # Note: validate_records returns list of ValidationResult. 
     # Need to group results by row to filter records.
     from collections import defaultdict

@@ -14,6 +14,7 @@ class ColumnSchema:
     max_length: int | None = None
     format: str | None = None
     values: list[Any] | None = None
+    # Reserved for future matching behavior; current validators remain case-sensitive.
     case_sensitive: bool = True
     true_values: list[str] | None = None
     false_values: list[str] | None = None

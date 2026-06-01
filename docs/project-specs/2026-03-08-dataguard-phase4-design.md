@@ -41,6 +41,8 @@ JSON report:
 - details: first N validation result items (row, column, value, level, code, message)
 - Limit N configurable by CLI parameter (default 20)
 
+Current decision note: `warning_count` remains in the report shape for compatibility, but current validators do not emit warnings and this behavior is intentionally not being changed.
+
 ## CLI Behavior
 - validate --input --schema --report [--format json|text] [--limit N]
 - convert --input --output

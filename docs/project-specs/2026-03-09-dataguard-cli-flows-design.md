@@ -80,6 +80,8 @@ The CLI at `src/dataguard/cli.py` implements three primary flows:
 
 ---
 
+Current decision note: `WARNING` remains reserved for report compatibility, but current validators do not emit warnings. The PASS/WARNING wording is retained from the original design and is intentionally not being expanded now.
+
 ## 4. Reporting Format (JSON)
 
 Validation reports follow this structure:

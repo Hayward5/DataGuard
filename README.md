@@ -47,6 +47,12 @@ The validation layer currently supports schema-driven checks such as:
 
 Validation reports include both validation errors and parse errors so that malformed input and invalid field values can be reviewed together.
 
+## Reserved Validation Features
+
+The schema model keeps `case_sensitive` for possible future enum or string matching behavior, but the current validators do not use it. Validation remains case-sensitive, and this behavior is intentionally left unchanged for now.
+
+Reports keep a `warning_count` field and the internal result model keeps the `WARNING` level for compatibility with earlier report designs. Current validators do not emit warnings, so `warning_count` is expected to stay `0`; this feature is reserved and intentionally not implemented.
+
 ## Cleaning and Transformation
 
 The repository includes a transformer layer for ordered record transformations.

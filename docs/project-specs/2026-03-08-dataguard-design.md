@@ -36,6 +36,8 @@ Each module communicates via plain Python data structures and domain error objec
 - Validation produces PASS/WARNING/ERROR levels with codes and messages
 - CLI returns exit codes: 0 success, 1 validation errors, 2 runtime errors
 
+Current decision note: `WARNING` remains reserved for compatibility with the report model, but current validators do not emit warnings and this behavior is intentionally not being changed.
+
 ## Testing Strategy
 - TDD for all new behavior (test fails first, then minimal implementation)
 - Unit tests for parsers, validators, and transformation operations

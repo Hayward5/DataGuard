@@ -64,6 +64,8 @@ class Report:
     details: list[ValidationResult]
 ```
 
+Current decision note: `warning_count` is reserved for compatibility with the report shape, but current validators do not emit warnings and this behavior is intentionally not being changed.
+
 **Step 4: Run test to verify it passes**
 
 Run: `uv run pytest tests/unit/reporter/test_models.py::test_report_model_fields -v`
@@ -317,6 +319,7 @@ from .models import Report
 
 def assemble_report(source_file: str, schema_name: str, total_rows: int, results: list[ValidationResult]) -> Report:
     pass_count = sum(1 for r in results if r.level == "PASS")
+    # Current decision: WARNING is reserved; validators currently do not emit it.
     warning_count = sum(1 for r in results if r.level == "WARNING")
     error_count = sum(1 for r in results if r.level == "ERROR")
 

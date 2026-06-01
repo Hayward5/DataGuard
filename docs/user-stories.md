@@ -89,6 +89,8 @@ Error Summary:
   join_date: INVALID_DATE_FORMAT x1
 ```
 
+目前決策註記：`Warnings` 欄位保留在報告格式中，但目前 validators 不產生 warning，因此預期為 `0`，暫不更動此行為。
+
 > 備註：`--format json` 為預設值，不指定時輸出 JSON 格式。
 
 ---

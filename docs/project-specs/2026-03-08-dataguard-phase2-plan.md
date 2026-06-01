@@ -68,6 +68,8 @@ class Schema:
     columns: list[ColumnSchema] = field(default_factory=list)
 ```
 
+Current decision note: `case_sensitive` is retained as a reserved schema field, but current validators do not implement case-insensitive matching and this behavior is intentionally not being changed.
+
 **Step 4: Run test to verify it passes**
 
 Run: `uv run pytest tests/unit/schema/test_models.py::test_schema_models_default_values -v`
@@ -207,6 +209,8 @@ class ValidationResult:
     message: str
 ```
 
+Current decision note: `WARNING` is retained as a reserved result level, but current validators do not emit warnings and this behavior is intentionally not being changed.
+
 **Step 4: Run test to verify it passes**
 
 Run: `uv run pytest tests/unit/schema/test_engine.py::test_validation_result_fields -v`
@@ -317,6 +321,8 @@ Run: `uv run pytest tests/unit/schema/validators/test_numeric.py::test_numeric_v
 Expected: FAIL with ImportError
 
 **Step 3: Write minimal implementation**
+
+Current decision note: this historical implementation sketch is not being applied. `case_sensitive` remains reserved and current enum validation remains case-sensitive.
 
 ```python
 from .base import BaseValidator, ValidationMessage
@@ -435,6 +441,7 @@ def test_enum_validator_values():
     from dataguard.schema.validators.enum import EnumValidator
     from dataguard.schema.models import ColumnSchema
 
+    # Historical example only. Current decision: case_sensitive is reserved and not implemented.
     schema = ColumnSchema(name="dept", type="enum", values=["HR", "ENG"], case_sensitive=False)
     validator = EnumValidator(schema)
 

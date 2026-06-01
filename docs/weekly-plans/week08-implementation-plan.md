@@ -74,6 +74,9 @@ Week 8 收尾標準：
 - `values`
 - `case_sensitive`
 
+目前決策註記：
+- `case_sensitive` 保留在 schema/model 設計中，但目前不實作大小寫不敏感比對，也不更動現有大小寫敏感行為。
+
 預期行為：
 - 值存在於 `values` 中時通過
 - 值不在 `values` 中時失敗
