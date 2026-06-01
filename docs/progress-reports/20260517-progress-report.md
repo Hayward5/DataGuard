@@ -131,7 +131,7 @@ dataguard clean ... --output clean.jsonl
 - 新增 User Story 11：date_format transformer
 - 新增 User Story 12：clean 輸出 JSON / JSONL 格式
 
-### 20260517-backlog.md 建立
+### backlog.md 建立
 
 整理目前已知但尚未完成的功能缺口、Phase 5 fixture 缺口與設計遺留問題，
 附上優先執行順序建議，供後續工程師接手時參考。
@@ -178,6 +178,6 @@ Coverage 95%
 - Phase 5 設計的 fixture matrix 大部分完成
 - Phase 4 / CLI Flows 設計文件已與實際程式行為對齊
 - 125 個自動化測試，覆蓋率 95%
-- `docs/20260517-backlog.md` 記錄所有已知未完成項目
+- `docs/backlog.md` 記錄所有已知未完成項目
 
-剩餘工作詳見 `docs/20260517-backlog.md`。
+剩餘工作詳見 `docs/backlog.md`。
