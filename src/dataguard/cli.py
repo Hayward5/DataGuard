@@ -4,7 +4,7 @@ from pathlib import Path
 import click
 
 from dataguard.output_factory import get_output_writer
-from dataguard.exceptions import ParseFailure, SchemaFailure
+from dataguard.exceptions import OutputFailure, ParseFailure, SchemaFailure
 from dataguard.parser.factory import get_parser
 from dataguard.reporter.assemble import assemble_report
 from dataguard.reporter import get_report_renderer
@@ -17,6 +17,23 @@ from dataguard.transformer.loader import load_transforms
 @click.group()
 def main():
     """DataGuard CLI."""
+
+
+def _write_report_file(report_path: str, rendered, report_format: str) -> None:
+    try:
+        if report_format == "json":
+            Path(report_path).write_text(json.dumps(rendered, indent=2), encoding="utf-8")
+        else:
+            Path(report_path).write_text(rendered, encoding="utf-8")
+    except OSError as exc:
+        raise OutputFailure(f"Failed to write report file: {report_path}") from exc
+
+
+def _write_output_file(writer, records, output_path: str) -> None:
+    try:
+        writer(records, output_path)
+    except OSError as exc:
+        raise OutputFailure(f"Failed to write output file: {output_path}") from exc
 
 
 @main.command()
@@ -60,10 +77,10 @@ def validate(input_path, schema_path, report_path, report_format, limit):
     renderer = get_report_renderer(report_format)
     rendered = renderer(report, limit=limit)
 
-    if report_format == "json":
-        Path(report_path).write_text(json.dumps(rendered, indent=2), encoding="utf-8")
-    else:
-        Path(report_path).write_text(rendered, encoding="utf-8")
+    try:
+        _write_report_file(report_path, rendered, report_format)
+    except OutputFailure as exc:
+        raise click.ClickException(str(exc)) from exc
 
     if report.error_count > 0:
         raise SystemExit(1)
@@ -122,7 +139,10 @@ def clean(input_path, schema_path, transforms_path, output_path, report_path, re
     except ValueError as exc:
         raise click.ClickException(str(exc)) from exc
 
-    writer(clean_records, output_path)
+    try:
+        _write_output_file(writer, clean_records, output_path)
+    except OutputFailure as exc:
+        raise click.ClickException(str(exc)) from exc
 
     report = assemble_report(
         source_file=input_path,
@@ -135,10 +155,10 @@ def clean(input_path, schema_path, transforms_path, output_path, report_path, re
     renderer = get_report_renderer(report_format)
     rendered = renderer(report, limit=limit)
 
-    if report_format == "json":
-        Path(report_path).write_text(json.dumps(rendered, indent=2), encoding="utf-8")
-    else:
-        Path(report_path).write_text(rendered, encoding="utf-8")
+    try:
+        _write_report_file(report_path, rendered, report_format)
+    except OutputFailure as exc:
+        raise click.ClickException(str(exc)) from exc
 
     if report.error_count > 0:
         raise SystemExit(1)
@@ -165,4 +185,7 @@ def convert(input_path, output_path):
     except ParseFailure as exc:
         raise click.ClickException(str(exc)) from exc
 
-    writer(parse_result.records, output_path)
+    try:
+        _write_output_file(writer, parse_result.records, output_path)
+    except OutputFailure as exc:
+        raise click.ClickException(str(exc)) from exc

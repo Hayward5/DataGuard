@@ -154,3 +154,126 @@ def test_convert_requires_input_and_output_paths():
 
     assert result.exit_code == 2
     assert "Missing option '--output'" in result.output
+
+
+def test_validate_reports_report_write_failure(tmp_path):
+    runner = CliRunner()
+    input_path = tmp_path / "employees.csv"
+    input_path.write_text("employee_id\nEMP-001\n", encoding="utf-8")
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        "schema:\n  name: test\n  version: '1.0'\n  strict: false\n  columns: []\n",
+        encoding="utf-8",
+    )
+    report_path = tmp_path / "missing" / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input",
+            str(input_path),
+            "--schema",
+            str(schema_path),
+            "--report",
+            str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Failed to write report file:" in result.output
+    assert str(report_path) in result.output
+
+
+def test_clean_reports_output_write_failure(tmp_path):
+    runner = CliRunner()
+    input_path = tmp_path / "employees.csv"
+    input_path.write_text("employee_id\nEMP-001\n", encoding="utf-8")
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        "schema:\n  name: test\n  version: '1.0'\n  strict: false\n  columns: []\n",
+        encoding="utf-8",
+    )
+    transforms_path = tmp_path / "transforms.yaml"
+    transforms_path.write_text("transforms: []\n", encoding="utf-8")
+    output_path = tmp_path / "missing" / "clean.csv"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "clean",
+            "--input",
+            str(input_path),
+            "--schema",
+            str(schema_path),
+            "--transforms",
+            str(transforms_path),
+            "--output",
+            str(output_path),
+            "--report",
+            str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Failed to write output file:" in result.output
+    assert str(output_path) in result.output
+
+
+def test_clean_reports_report_write_failure(tmp_path):
+    runner = CliRunner()
+    input_path = tmp_path / "employees.csv"
+    input_path.write_text("employee_id\nEMP-001\n", encoding="utf-8")
+    schema_path = tmp_path / "schema.yaml"
+    schema_path.write_text(
+        "schema:\n  name: test\n  version: '1.0'\n  strict: false\n  columns: []\n",
+        encoding="utf-8",
+    )
+    transforms_path = tmp_path / "transforms.yaml"
+    transforms_path.write_text("transforms: []\n", encoding="utf-8")
+    output_path = tmp_path / "clean.csv"
+    report_path = tmp_path / "missing" / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "clean",
+            "--input",
+            str(input_path),
+            "--schema",
+            str(schema_path),
+            "--transforms",
+            str(transforms_path),
+            "--output",
+            str(output_path),
+            "--report",
+            str(report_path),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Failed to write report file:" in result.output
+    assert str(report_path) in result.output
+
+
+def test_convert_reports_output_write_failure(tmp_path):
+    runner = CliRunner()
+    input_path = tmp_path / "employees.csv"
+    input_path.write_text("employee_id\nEMP-001\n", encoding="utf-8")
+    output_path = tmp_path / "missing" / "converted.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "convert",
+            "--input",
+            str(input_path),
+            "--output",
+            str(output_path),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Failed to write output file:" in result.output
+    assert str(output_path) in result.output
