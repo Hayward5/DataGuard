@@ -2,7 +2,7 @@
 
   目前狀態
   - main 與 origin/main 同步。
-  - 目前測試：159 passed，coverage 96%。
+  - 目前測試：163 passed，coverage 96%。
   - case_sensitive 與 WARNING 已決定保留但目前不更動、不實作。
 
   已完成
@@ -28,6 +28,14 @@
      schema registry unknown type 測試已存在。
      transformer loader FileNotFoundError 測試已存在。
 
+  ✅ 6. 輸出錯誤處理（Issue #27 / PR #28）
+     validate 寫 report、clean 寫 output/report、convert 寫 output 失敗時，
+     會轉成清楚的 click.ClickException。
+     錯誤訊息包含 Failed to write output/report file 與失敗路徑。
+
+  ✅ 7. README transformer 清單同步
+     README 已補上 field_map 與 date_format。
+
   保留但目前不更動
   1. case_sensitive
      src/dataguard/schema/models.py 保留 case_sensitive 欄位。
@@ -40,16 +48,8 @@
      README 與 backlog 已註記為 reserved / not currently active。
 
   接下來建議優先做
-  1. 輸出錯誤處理
-     src/dataguard/exceptions.py 已定義 OutputFailure，但 CLI 寫 output/report 時還沒有統一包裝寫檔失敗。
-     建議將 writer/report write failure 轉成清楚的 click.ClickException，並補 CLI error branch tests。
-
-  2. 更新 README transformer 清單
-     README 目前 transformer operations 還只列 type_cast、fill_missing、dedup。
-     程式實際也支援 field_map 與 date_format，應同步補上。
-
-  3. 補 coverage 小缺口
-     coverage 剩餘缺口主要在 CLI error branches、schema loader 異常路徑、reporter invalid format、transformer 少數錯誤分支。
+  1. 補 coverage 小缺口
+     coverage 剩餘缺口主要在 schema loader 異常路徑、reporter invalid format、transformer 少數錯誤分支。
      這些是小而穩的測試任務。
 
   較大的 future work

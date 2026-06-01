@@ -63,6 +63,8 @@ Current transformer operations include:
 - `type_cast`
 - `fill_missing`
 - `dedup`
+- `field_map`
+- `date_format`
 
 The `clean` command uses this transformer layer, validates the transformed records against a schema, writes valid records to a CSV output file, and writes a JSON validation report.
 
