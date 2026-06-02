@@ -27,3 +27,25 @@ def test_type_cast_keeps_original_value_when_conversion_fails():
     result = type_cast(records, {"column": "value", "target_type": "integer"})
 
     assert result[0]["value"] == "bad"
+
+
+def test_type_cast_raises_on_unsupported_target_type():
+    import pytest
+
+    from dataguard.transformer.type_cast import type_cast
+
+    records = [{"value": "test"}]
+
+    with pytest.raises(ValueError, match="Unsupported cast target: invalid_type"):
+        type_cast(records, {"column": "value", "target_type": "invalid_type"})
+
+
+def test_type_cast_raises_on_unsupported_target_type_image():
+    import pytest
+
+    from dataguard.transformer.type_cast import type_cast
+
+    records = [{"value": "test"}]
+
+    with pytest.raises(ValueError, match="Unsupported cast target: image"):
+        type_cast(records, {"column": "value", "target_type": "image"})
