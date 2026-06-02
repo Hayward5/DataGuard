@@ -130,15 +130,25 @@ README 的 transformer operations 清單已同步目前程式，包含 `field_ma
 **狀態：**
 已完成，暫無需修改。
 
-### 13. 補 coverage 小缺口
+### 13. 補 coverage 小缺口 - 已完成
 
 **說明：**
 目前 coverage 為 96%，缺口主要集中在 schema loader 異常路徑、reporter unknown format、transformer 少數錯誤分支。
 
-**建議做法：**
-- 補 schema loader invalid YAML / invalid schema shape tests
-- 補 reporter unknown format test
-- 補 transformer unsupported option error branch tests
+**已完成內容：**
+- ✅ 補 schema loader invalid YAML / invalid schema shape tests (4 個測試)
+- ✅ 補 reporter unknown format test (4 個測試)
+- ✅ 補 transformer unsupported option error branch tests (6 個測試)
+
+**新增測試檔案：**
+- `tests/unit/schema/test_loader.py` +4 tests (YAML 解析錯誤、schema 結構錯誤、columns 結構錯誤、不支援 format)
+- `tests/unit/reporter/test_reporter_init.py` +4 tests (JSON/Text 格式返回，未知格式錯誤處理)
+- `tests/unit/transformer/test_type_cast.py` +2 tests (不支援的目標類型)
+- `tests/unit/transformer/test_dedup.py` +2 tests (不支援的 keep 模式)
+- `tests/unit/transformer/test_fill_missing.py` +2 tests (不支援的填補策略)
+
+**狀態：**
+已完成 (Issue #29 / PR #29, 2026-06-02)，測試覆蓋率約提升 2-4%。
 
 ---
 
@@ -146,7 +156,7 @@ README 的 transformer operations 清單已同步目前程式，包含 `field_ma
 
 | 優先 | 項目 | 理由 |
 |------|------|------|
-| 中 | #13 補 coverage 小缺口 | 提升 schema/reporter/transformer error branch 信心 |
+| ✅ 完成 | #13 補 coverage 小缺口 | 提升 schema/reporter/transformer error branch 信心 |
 | 保留 | #6 case_sensitive | 保留但目前不更動、不實作 |
 | 保留 | #7 WARNING level | 保留但目前不更動、不產生 warning |
 

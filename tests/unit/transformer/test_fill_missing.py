@@ -77,3 +77,25 @@ def test_fill_missing_mean_keeps_original_when_no_valid_numeric_values():
     assert result[0]["age"] is None
     assert result[1]["age"] == ""
 
+
+def test_fill_missing_raises_on_unsupported_strategy():
+    import pytest
+
+    from dataguard.transformer.fill_missing import fill_missing
+
+    records = [{"age": 20}]
+
+    with pytest.raises(ValueError, match="Unsupported fill_missing strategy: invalid"):
+        fill_missing(records, {"column": "age", "strategy": "invalid"})
+
+
+def test_fill_missing_raises_on_unsupported_strategy_backward():
+    import pytest
+
+    from dataguard.transformer.fill_missing import fill_missing
+
+    records = [{"age": 20}]
+
+    with pytest.raises(ValueError, match="Unsupported fill_missing strategy: backward"):
+        fill_missing(records, {"column": "age", "strategy": "backward"})
+
