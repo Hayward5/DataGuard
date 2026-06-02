@@ -34,23 +34,29 @@
      錯誤訊息包含 Failed to write output/report file 與失敗路徑。
 
   ✅ 7. README transformer 清單同步
-     README 已補上 field_map 與 date_format。
+      README 已補上 field_map 與 date_format。
+
+  ✅ 8. 補 coverage 小缺口（PR #29，2026-06-02）
+      新增 schema loader 異常路徑測試（YAML 解析錯誤、結構驗證錯誤、不支援格式）。
+      新增 reporter 未知格式測試。
+      新增 transformer 錯誤分支測試（type_cast/dedup/fill_missing 不支援操作）。
+      tests/unit/schema/test_loader.py +4 tests
+      tests/unit/reporter/test_reporter_init.py +4 tests  
+      tests/unit/transformer/test_*.py +6 tests
 
   保留但目前不更動
   1. case_sensitive
-     src/dataguard/schema/models.py 保留 case_sensitive 欄位。
-     enum/string validator 目前不使用它，現有大小寫敏感行為不更動。
-     README 與 backlog 已註記為 reserved / not currently active。
+      src/dataguard/schema/models.py 保留 case_sensitive 欄位。
+      enum/string validator 目前不使用它，現有大小寫敏感行為不更動。
+      README 與 backlog 已註記為 reserved / not currently active。
 
   2. WARNING level
-     src/dataguard/schema/results.py 和 reporter 保留 WARNING / warning_count。
-     目前 validators 不產生 warning，warning_count 預期維持 0。
-     README 與 backlog 已註記為 reserved / not currently active。
+      src/dataguard/schema/results.py 和 reporter 保留 WARNING / warning_count。
+      目前 validators 不產生 warning，warning_count 預期維持 0。
+      README 與 backlog 已註記為 reserved / not currently active。
 
   接下來建議優先做
-  1. 補 coverage 小缺口
-     coverage 剩餘缺口主要在 schema loader 異常路徑、reporter invalid format、transformer 少數錯誤分支。
-     這些是小而穩的測試任務。
+   - 無明確優先任務，coverage 缺口已完成
 
   較大的 future work
   - Excel input
