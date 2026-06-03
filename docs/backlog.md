@@ -1,7 +1,7 @@
 # DataGuard 未完成項目清單
 
 **建立日期：2026-05-17**
-**目前狀態：163 tests passing，96% coverage**
+**目前狀態：178 tests passing，97% coverage**
 
 本文件記錄目前已完成的原始缺口、仍建議改善的項目與保留不更動的設計決策，
 供下一位工程師接手時快速了解剩餘工作。
@@ -23,6 +23,7 @@
 
 **說明：**
 已新增 `FloatValidator`，registry 已支援 `type: float`，並有 unit tests。
+`schemas/employees.yaml` 也已加入 optional `score` float 欄位，並有 integration test 覆蓋。
 
 **狀態：**
 已完成，暫無需修改。
@@ -133,7 +134,7 @@ README 的 transformer operations 清單已同步目前程式，包含 `field_ma
 ### 13. 補 coverage 小缺口 - 已完成
 
 **說明：**
-目前 coverage 為 96%，缺口主要集中在 schema loader 異常路徑、reporter unknown format、transformer 少數錯誤分支。
+目前 coverage 為 97%，缺口主要集中在 schema loader 異常路徑、reporter unknown format、transformer 少數錯誤分支。
 
 **已完成內容：**
 - ✅ 補 schema loader invalid YAML / invalid schema shape tests (4 個測試)

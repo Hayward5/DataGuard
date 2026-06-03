@@ -2,13 +2,14 @@
 
   目前狀態
   - main 與 origin/main 同步。
-  - 目前測試：163 passed，coverage 96%。
+  - 目前測試：178 passed，coverage 97%。
   - case_sensitive 與 WARNING 已決定保留但目前不更動、不實作。
 
   已完成
   ✅ 1. Schema type: float validator（PR #20，2026-05-26）
      新增 FloatValidator，支援 min/max range 驗證。
      src/dataguard/schema/validators/float_validator.py
+     schemas/employees.yaml 已加入 optional score float 欄位作為範例 schema 展示。
 
   ✅ 2. JSON root 結構驗證（PR #22，2026-05-26）
      JSON root 非 array → ParseFailure；array 內非 object 元素 → ParseErrorItem；

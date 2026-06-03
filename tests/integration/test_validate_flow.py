@@ -281,6 +281,35 @@ def test_validate_flow_strict_schema_reports_unknown_columns(tmp_path):
     assert payload["error_summary"]["extra_note"]["UNKNOWN_COLUMN"] == 1
 
 
+def test_validate_flow_employees_schema_supports_optional_float_score(tmp_path):
+    runner = CliRunner()
+    input_path = tmp_path / "employees_with_score.csv"
+    input_path.write_text(
+        "employee_id,name,status,is_active,join_date,age,score\n"
+        "EMP-001,Alice,ACTIVE,true,2026-04-12,30,95.5\n"
+        "EMP-002,Bob,INACTIVE,false,2026-04-10,25,101.5\n",
+        encoding="utf-8",
+    )
+    schema_path = Path(__file__).parent.parent.parent / "schemas" / "employees.yaml"
+    report_path = tmp_path / "report.json"
+
+    result = runner.invoke(
+        main,
+        [
+            "validate",
+            "--input", str(input_path),
+            "--schema", str(schema_path),
+            "--report", str(report_path),
+            "--format", "json",
+        ],
+    )
+
+    assert result.exit_code == 1, result.output
+    payload = json.loads(report_path.read_text(encoding="utf-8"))
+    assert payload["summary"]["validation_error_count"] == 1
+    assert payload["error_summary"]["score"]["OUT_OF_RANGE"] == 1
+
+
 def test_validate_flow_text_format_writes_text_report(tmp_path):
     runner = CliRunner()
 

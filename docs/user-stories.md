@@ -524,6 +524,7 @@ dataguard convert \
 | dedup transformer | ✅ 完成（first、last、none） |
 | field_map transformer | ✅ 完成（rename、drop） |
 | date_format transformer | ✅ 完成 |
+| float validator / score 欄位 | ✅ 完成（employees schema optional score: 0.0-100.0） |
 | CSV / JSON / JSONL 輸入 | ✅ 完成 |
 | CSV / JSON / JSONL 輸出（validate、convert、clean） | ✅ 完成 |
-| 自動化測試 | ✅ 125 tests，95% coverage |
+| 自動化測試 | ✅ 178 tests，97% coverage |

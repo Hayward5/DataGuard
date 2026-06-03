@@ -41,3 +41,8 @@ schema:
       required: true
       min: 18
       max: 65
+    - name: score
+      type: float
+      required: false
+      min: 0.0
+      max: 100.0

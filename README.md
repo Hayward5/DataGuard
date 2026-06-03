@@ -24,7 +24,7 @@ The codebase is organized around a few core modules:
 - `schema`
   loads YAML schema definitions and evaluates validation rules
 - `reporter`
-  assembles validation results and renders JSON reports
+  assembles validation results and renders JSON and text reports
 - `transformer`
   applies ordered record transformations such as type casting, missing-value handling, and deduplication
 - `output`
@@ -40,6 +40,7 @@ The validation layer currently supports schema-driven checks such as:
 - string pattern matching
 - string length limits
 - integer range validation
+- float range validation
 - enum validation
 - boolean validation
 - date format validation
@@ -66,7 +67,7 @@ Current transformer operations include:
 - `field_map`
 - `date_format`
 
-The `clean` command uses this transformer layer, validates the transformed records against a schema, writes valid records to a CSV output file, and writes a JSON validation report.
+The `clean` command uses this transformer layer, validates the transformed records against a schema, writes valid records as CSV, JSON, or JSONL, and writes a JSON or text validation report.
 
 ## Format Conversion
 
@@ -83,7 +84,8 @@ Validate records and write a JSON report:
 dataguard validate \
   --input tests/fixtures/validate/valid/csv_employees_valid.csv \
   --schema schemas/employees.yaml \
-  --report report.json
+  --report report.json \
+  --format json
 ```
 
 Clean records with a transform config, then write clean rows and a report:
@@ -94,7 +96,8 @@ dataguard clean \
   --schema schemas/employees.yaml \
   --transforms tests/fixtures/clean/config/clean_transforms.yaml \
   --output clean.csv \
-  --report clean-report.json
+  --report clean-report.json \
+  --format json
 ```
 
 Convert between supported formats:
