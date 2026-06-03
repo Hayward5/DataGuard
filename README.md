@@ -1,6 +1,6 @@
-# DataGuard Rebuild
+# DataGuard
 
-DataGuard Rebuild is a schema-driven command-line tool for structured data validation, cleaning, and format conversion workflows.
+DataGuard is a schema-driven command-line tool for structured data validation, cleaning, and format conversion workflows.
 
 The project is designed for datasets such as CSV, JSON, and JSONL, where records need to be checked against explicit rules, reported in a consistent format, cleaned through reusable transformation steps, or converted between supported structured-data formats.
 
