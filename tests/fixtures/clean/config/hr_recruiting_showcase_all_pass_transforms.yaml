@@ -1,0 +1,37 @@
+transforms:
+  - operation: dedup
+    keys: [candidate_id]
+    keep: first
+  - operation: field_map
+    drop:
+      - internal_notes
+  - operation: fill_missing
+    column: recruiter_team
+    strategy: default
+    value: TA
+  - operation: fill_missing
+    column: source_channel
+    strategy: default
+    value: LinkedIn
+  - operation: fill_missing
+    column: screening_score
+    strategy: mean
+  - operation: date_format
+    column: application_date
+    source_formats:
+      - "%Y-%m-%d"
+    target_format: "%Y-%m-%d"
+  - operation: date_format
+    column: last_contact_date
+    source_formats:
+      - "%Y-%m-%d"
+    target_format: "%Y-%m-%d"
+  - operation: type_cast
+    column: salary_expectation
+    target_type: integer
+  - operation: type_cast
+    column: years_experience
+    target_type: float
+  - operation: type_cast
+    column: screening_score
+    target_type: float

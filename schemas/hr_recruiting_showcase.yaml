@@ -1,0 +1,118 @@
+schema:
+  name: hr_recruiting_showcase
+  version: "1.0"
+  strict: true
+  columns:
+    - name: candidate_id
+      type: string
+      required: true
+      pattern: "^EMP-[0-9]{3}$"
+    - name: full_name
+      type: string
+      required: true
+      min_length: 3
+      max_length: 40
+    - name: email
+      type: string
+      required: true
+      pattern: "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"
+    - name: phone
+      type: string
+      required: true
+      pattern: "^\\+1-555-[0-9]{4}$"
+    - name: department
+      type: enum
+      required: true
+      values:
+        - Engineering
+        - Sales
+        - Ops
+        - Finance
+        - Marketing
+        - Support
+        - Product
+        - People
+    - name: recruiter_name
+      type: string
+      required: true
+      min_length: 3
+      max_length: 40
+    - name: recruiter_team
+      type: enum
+      required: true
+      values:
+        - TA
+        - HRBP
+        - Campus
+        - Agency
+    - name: job_title
+      type: string
+      required: true
+      min_length: 3
+      max_length: 50
+    - name: source
+      type: enum
+      required: true
+      values:
+        - LinkedIn
+        - Referral
+        - JobBoard
+        - Internal
+        - Agency
+    - name: location
+      type: enum
+      required: true
+      values:
+        - Taipei
+        - San Francisco
+        - Singapore
+        - London
+        - Berlin
+        - Austin
+    - name: application_date
+      type: string
+      required: true
+      format: date
+    - name: last_contact_date
+      type: string
+      required: true
+      format: date
+    - name: stage
+      type: enum
+      required: true
+      values:
+        - Applied
+        - Screening
+        - Interview
+        - Offer
+        - Hired
+        - Rejected
+    - name: status
+      type: enum
+      required: true
+      values:
+        - Open
+        - Closed
+        - Withdrawn
+    - name: salary_expectation
+      type: integer
+      required: true
+      min: 60000
+      max: 130000
+    - name: years_experience
+      type: float
+      required: true
+      min: 0.0
+      max: 20.0
+    - name: screening_score
+      type: float
+      required: true
+      min: 0.0
+      max: 100.0
+    - name: is_internal_candidate
+      type: boolean
+      required: true
+      true_values:
+        - true
+      false_values:
+        - false

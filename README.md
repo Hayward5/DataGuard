@@ -88,6 +88,52 @@ dataguard validate \
   --format json
 ```
 
+Demo datasets for HR recruiting workflows are included in `tests/fixtures/clean/valid/` and `schemas/`.
+
+Use the showcase dataset when you want to demonstrate validation errors and cleaning behavior:
+
+```bash
+dataguard validate \
+  --input tests/fixtures/clean/valid/csv_hr_recruiting_showcase.csv \
+  --schema schemas/hr_recruiting_showcase.yaml \
+  --report hr-showcase-validate.json \
+  --format json
+
+dataguard clean \
+  --input tests/fixtures/clean/valid/csv_hr_recruiting_showcase.csv \
+  --schema schemas/hr_recruiting_showcase.yaml \
+  --transforms tests/fixtures/clean/config/hr_recruiting_showcase_transforms.yaml \
+  --output hr-showcase-clean.csv \
+  --report hr-showcase-clean.json \
+  --format json
+
+dataguard convert \
+  --input tests/fixtures/clean/valid/csv_hr_recruiting_showcase.csv \
+  --output hr-showcase.json
+```
+
+Use the all-pass dataset when you want every command to complete cleanly:
+
+```bash
+dataguard validate \
+  --input tests/fixtures/clean/valid/csv_hr_recruiting_showcase_all_pass.csv \
+  --schema schemas/hr_recruiting_showcase_all_pass.yaml \
+  --report hr-all-pass-validate.json \
+  --format json
+
+dataguard clean \
+  --input tests/fixtures/clean/valid/csv_hr_recruiting_showcase_all_pass.csv \
+  --schema schemas/hr_recruiting_showcase_all_pass.yaml \
+  --transforms tests/fixtures/clean/config/hr_recruiting_showcase_all_pass_transforms.yaml \
+  --output hr-all-pass-clean.csv \
+  --report hr-all-pass-clean.json \
+  --format json
+
+dataguard convert \
+  --input tests/fixtures/clean/valid/csv_hr_recruiting_showcase_all_pass.csv \
+  --output hr-all-pass.json
+```
+
 Clean records with a transform config, then write clean rows and a report:
 
 ```bash

@@ -1,0 +1,69 @@
+transforms:
+  - operation: dedup
+    keys: [emp_id]
+    keep: first
+  - operation: field_map
+    rename:
+      emp_id: candidate_id
+      candidate_name: full_name
+      candidate_email: email
+      candidate_phone: phone
+      dept: department
+      recruiter: recruiter_name
+      position: job_title
+      source_channel: source
+      applied_at: application_date
+      last_contacted_at: last_contact_date
+      offer_salary: salary_expectation
+    drop:
+      - internal_notes
+  - operation: fill_missing
+    column: full_name
+    strategy: default
+    value: Unknown Candidate
+  - operation: fill_missing
+    column: recruiter_name
+    strategy: default
+    value: Unassigned Recruiter
+  - operation: fill_missing
+    column: recruiter_team
+    strategy: default
+    value: TA
+  - operation: fill_missing
+    column: source
+    strategy: default
+    value: LinkedIn
+  - operation: fill_missing
+    column: last_contact_date
+    strategy: forward_fill
+  - operation: fill_missing
+    column: screening_score
+    strategy: mean
+  - operation: date_format
+    column: application_date
+    source_formats:
+      - "%Y-%m-%d"
+      - "%Y/%m/%d"
+      - "%m-%d-%Y"
+      - "%Y.%m.%d"
+    target_format: "%Y-%m-%d"
+  - operation: date_format
+    column: last_contact_date
+    source_formats:
+      - "%Y-%m-%d"
+      - "%Y/%m/%d"
+      - "%m-%d-%Y"
+      - "%Y.%m.%d"
+    target_format: "%Y-%m-%d"
+  - operation: type_cast
+    column: salary_expectation
+    target_type: integer
+  - operation: type_cast
+    column: years_experience
+    target_type: float
+  - operation: type_cast
+    column: screening_score
+    target_type: float
+  - operation: type_cast
+    column: is_internal_candidate
+    target_type: boolean
